@@ -8,11 +8,14 @@ import scala.concurrent.{ duration => scd }
 import scala.{ concurrent => sc }
 
 package object skithub {
+  type ->[+A, +B]     = scala.Product2[A, B]
+  type ?=>[-A, +B]    = scala.PartialFunction[A, B]
   type Duration       = scd.Duration
   type FiniteDuration = scd.FiniteDuration
   type Future[+T]     = sc.Future[T]
   type JsonFormat[T]  = play.api.libs.json.Format[T]
 
+  val ->         = scala.Product2
   val Future     = scala.concurrent.Future
   val Json       = play.api.libs.json.Json
   val JsonFormat = play.api.libs.json.Format
@@ -27,6 +30,8 @@ package object skithub {
     @inline def doto(f: T => Unit): T     = sideEffect(f(x))
 
     @inline def >>(): Unit = sideEffect(println(x)).toUnit()
+
+    @inline def maybe[U](pf: T ?=> U): Option[U] = pf lift x
   }
 
   implicit class FutureW[T](private val f: Future[T]) extends AnyVal {
