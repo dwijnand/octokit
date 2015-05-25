@@ -51,13 +51,7 @@ object T {
               case Some(nextUrlStr) => getRepos1(accessToken, nextUrlStr, repos ++ moreRepos)
               case None             => Future successful JsSuccess(repos ++ moreRepos)
             }
-          case jsE: JsError            =>
-            jsE.errors foreach { case path -> errors =>
-              val value = path.asSingleJson(resp.json)
-              s"Error at ${path.toJsonString}, value: $value, errors:".>>
-              errors foreach (err => f"${err.message}%35s : ${err.args.mkString("[","],[","]")}".>>)
-            }
-            Future successful jsE
+          case jsE: JsError            => Future successful jsE
         }
       }
     )
