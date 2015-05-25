@@ -46,12 +46,12 @@ object T {
       get()
       flatMap { resp =>
         resp.json.validate[Seq[Repo]] match {
-          case jsS @ JsSuccess(moreRepos, _) =>
+          case JsSuccess(moreRepos, _) =>
             resp header "Link" flatMap getNextLink match {
               case Some(nextUrlStr) => getRepos1(accessToken, nextUrlStr, repos ++ moreRepos)
-              case None             => Future successful jsS
+              case None             => Future successful JsSuccess(repos ++ moreRepos)
             }
-          case jsE: JsError                  =>
+          case jsE: JsError            =>
             jsE.errors foreach { case path -> errors =>
               val value = path.asSingleJson(resp.json)
               s"Error at ${path.toJsonString}, value: $value, errors:".>>
