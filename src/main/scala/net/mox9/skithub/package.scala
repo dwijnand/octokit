@@ -4,6 +4,7 @@ import scala.language.implicitConversions
 
 import play.api.libs.json.{ JsObject, JsValue }
 
+// TODO: Rename to octokit.scala?
 package object skithub {
   @inline type ->[+A, +B]     = scala.Product2[A, B]
   @inline type ?=>[-A, +B]    = scala.PartialFunction[A, B]
