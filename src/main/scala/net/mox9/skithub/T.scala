@@ -1,7 +1,7 @@
 package net.mox9.skithub
 
 import play.api.Play.current
-import play.api.libs.ws._
+import play.api.libs.ws.WS
 import play.api.{ DefaultApplication, Mode, Play }
 
 import java.io.File
@@ -35,7 +35,7 @@ object T {
   def getRepos(accessToken: AccessToken, urlStr: String): Seq[Repo] = {
     val reposFut = (WS
       url urlStr
-      withHeaders "Accept" -> "application/vnd.github.v3+json"
+      withHeaders        "Accept" -> "application/vnd.github.v3+json"
       withHeaders "Authorization" -> s"token $accessToken"
       get()
     )
