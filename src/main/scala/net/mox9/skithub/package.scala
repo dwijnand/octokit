@@ -11,9 +11,11 @@ package object skithub {
   type Duration       = scd.Duration
   type FiniteDuration = scd.FiniteDuration
   type Future[+T]     = sc.Future[T]
+  type JsonFormat[T]  = play.api.libs.json.Format[T]
 
-  val Future = scala.concurrent.Future
-  val Json   = play.api.libs.json.Json
+  val Future     = scala.concurrent.Future
+  val Json       = play.api.libs.json.Json
+  val JsonFormat = play.api.libs.json.Format
 
   implicit def DurationInt(n: Int): scd.DurationInt = scd.DurationInt(n)
 
