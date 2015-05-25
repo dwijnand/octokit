@@ -2,7 +2,7 @@ package net.mox9
 
 import scala.language.implicitConversions
 
-import play.api.libs.json.{ JsObject, JsError, JsValue }
+import play.api.libs.json.{ JsObject, JsValue }
 
 package object skithub {
   type ->[+A, +B]     = scala.Product2[A, B]
@@ -11,11 +11,15 @@ package object skithub {
   type FiniteDuration = scala.concurrent.duration.FiniteDuration
   type Future[+T]     = scala.concurrent.Future[T]
   type JsonFormat[T]  = play.api.libs.json.Format[T]
+  type JsError        = play.api.libs.json.JsError
+  type JsResult[+T]   = play.api.libs.json.JsResult[T]
+  type JsSuccess[T]   = play.api.libs.json.JsSuccess[T]
 
   val ->         = scala.Product2
   val Future     = scala.concurrent.Future
   val Json       = play.api.libs.json.Json
   val JsonFormat = play.api.libs.json.Format
+  val JsError    = play.api.libs.json.JsError
 
   implicit def DurationInt(n: Int): scala.concurrent.duration.DurationInt =
     scala.concurrent.duration.DurationInt(n)
