@@ -20,6 +20,7 @@ package object skithub {
   val Json       = play.api.libs.json.Json
   val JsonFormat = play.api.libs.json.Format
   val JsError    = play.api.libs.json.JsError
+  val JsSuccess  = play.api.libs.json.JsSuccess
 
   implicit def DurationInt(n: Int): scala.concurrent.duration.DurationInt =
     scala.concurrent.duration.DurationInt(n)
