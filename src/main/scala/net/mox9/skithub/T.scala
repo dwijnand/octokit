@@ -62,7 +62,7 @@ case class Repo(
   full_name : String,
   `private` : Boolean,
   fork      : Boolean,
-  language  : String
+  language  : Option[String]
 )
 object Repo {
   implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
