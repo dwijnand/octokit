@@ -25,7 +25,7 @@ object T {
   def go(accessToken: AccessToken, org: String): Unit = {
     val urlStr = s"https://api.github.com/orgs/$org/repos"
 
-    val repos: Seq[Repo] = getRepos(accessToken, urlStr).result()
+    val repos: Seq[Repo] = getRepos(accessToken, urlStr).await30s
 
     s"${repos.length} repos".>>
 //    repos foreach (_.>>)
