@@ -9,6 +9,7 @@ import java.io.File
 
 object T {
   def main(args: Array[String]): Unit = {
+    val userAgent = "dwijnand"
     val accessToken = sys.env get "GITHUB_API_TOKEN"  map AccessToken getOrElse
       (sys error "Need to set GITHUB_API_TOKEN")
     val org = args.headOption getOrElse (sys error "Provide an org name")
@@ -18,14 +19,14 @@ object T {
 
     Play start new DefaultApplication(appBaseDir, appClassLoader, None, Mode.Dev)
 
-    try go(accessToken, org)
+    try go(userAgent, accessToken, org)
     finally Play.stop()
   }
 
-  def go(accessToken: AccessToken, org: String): Unit = {
+  def go(userAgent: String, accessToken: AccessToken, org: String): Unit = {
     val urlStr = s"https://api.github.com/orgs/$org/repos"
 
-    val repos: Seq[Repo] = getRepos(accessToken, urlStr).await30s
+    val repos: Seq[Repo] = getRepos(userAgent, accessToken, urlStr).await30s
 
     s"${repos.length} repos".>>
 //    repos foreach (_.>>)
@@ -33,22 +34,25 @@ object T {
     ()
   }
 
-  def getRepos(accessToken: AccessToken, urlStr: String): Future[Seq[Repo]] = (
-    getRepos1(accessToken, urlStr, Vector.empty)
+  def getRepos(userAgent: String, accessToken: AccessToken, urlStr: String): Future[Seq[Repo]] = (
+    getRepos1(userAgent, accessToken, urlStr, Vector.empty)
       map (_ recoverTotal (e => sys error s"Failed to read repos:\n${e.toFlatJson.pp}"))
   )
 
-  def getRepos1(accessToken: AccessToken, urlStr: String, repos: Vector[Repo]): Future[JsResult[Seq[Repo]]] =
+  def getRepos1(
+    userAgent: String, accessToken: AccessToken, urlStr: String, repos: Vector[Repo]
+  ): Future[JsResult[Seq[Repo]]] =
     (WS
       url urlStr
-      withHeaders        "Accept" -> "application/vnd.github.v3+json"
+      withHeaders    "User-Agent" -> userAgent
+      withHeaders        "Accept" ->  "application/vnd.github.v3+json"
       withHeaders "Authorization" -> s"token $accessToken"
       get()
       flatMap { resp =>
         resp.json.validate[Seq[Repo]] match {
           case JsSuccess(moreRepos, _) =>
             resp header "Link" flatMap getNextLink match {
-              case Some(nextUrlStr) => getRepos1(accessToken, nextUrlStr, repos ++ moreRepos)
+              case Some(nextUrlStr) => getRepos1(userAgent, accessToken, nextUrlStr, repos ++ moreRepos)
               case None             => Future successful JsSuccess(repos ++ moreRepos)
             }
           case jsE: JsError            => Future successful jsE
