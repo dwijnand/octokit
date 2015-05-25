@@ -41,5 +41,8 @@ libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.3.9"
 
 initialCommands in console += "\nimport net.mox9.skithub._"
 
+fork in run := true
+cancelable in Global :=  true
+
 watchSources ++= (baseDirectory.value * "*.sbt").get
 watchSources ++= (baseDirectory.value / "project" * "*.scala").get
