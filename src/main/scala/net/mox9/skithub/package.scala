@@ -38,7 +38,7 @@ package object skithub {
   }
 
   implicit class FutureW[T](private val f: Future[T]) extends AnyVal {
-    @inline def result(atMost: Duration = 5.seconds): T = sc.Await.result(f, atMost)
+    @inline def result(atMost: Duration = 5.seconds): T = scala.concurrent.Await.result(f, atMost)
   }
 
   implicit class JsValueW[T](private val json: JsValue) extends AnyVal {
