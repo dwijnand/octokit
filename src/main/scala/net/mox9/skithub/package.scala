@@ -2,10 +2,10 @@ package net.mox9
 
 import scala.language.implicitConversions
 
-import play.api.libs.json.{ Json, JsValue }
+import play.api.libs.json.JsValue
 
-import scala.{ concurrent => sc }
 import scala.concurrent.{ duration => scd }
+import scala.{ concurrent => sc }
 
 package object skithub {
   type Duration       = scd.Duration
@@ -13,6 +13,7 @@ package object skithub {
   type Future[+T]     = sc.Future[T]
 
   val Future = scala.concurrent.Future
+  val Json   = play.api.libs.json.Json
 
   implicit def DurationInt(n: Int): scd.DurationInt = scd.DurationInt(n)
 
