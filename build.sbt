@@ -22,7 +22,7 @@ scalacOptions             += "-Ywarn-value-discard"
 maxErrors := 5
 triggeredMessage := Watched.clearWhenTriggered
 
-  wartremoverWarnings += Wart.Any
+//wartremoverWarnings += Wart.Any                     // bans f-interpolator
   wartremoverWarnings += Wart.Any2StringAdd
   wartremoverWarnings += Wart.AsInstanceOf
   wartremoverWarnings += Wart.EitherProjectionPartial
