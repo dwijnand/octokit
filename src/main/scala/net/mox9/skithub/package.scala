@@ -16,11 +16,19 @@ package object skithub {
 
   implicit def DurationInt(n: Int): scd.DurationInt = scd.DurationInt(n)
 
+  implicit class AnyW[T](private val x: T) extends AnyVal {
+    @inline def pipe[U](f: T => U): U     = f(x)
+    @inline def sideEffect(body: Unit): T = x
+    @inline def doto(f: T => Unit): T     = sideEffect(x doto f)
+
+    @inline def >> : T = x doto println
+  }
+
   implicit class FutureW[T](private val f: Future[T]) extends AnyVal {
     @inline def result(atMost: Duration = 5.seconds): T = sc.Await.result(f, atMost)
   }
 
   implicit class JsValueW[T](private val json: JsValue) extends AnyVal {
-    def pp: String = Json prettyPrint json
+    @inline def pp: String = Json prettyPrint json
   }
 }
