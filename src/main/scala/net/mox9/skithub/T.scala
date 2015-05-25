@@ -8,14 +8,14 @@ import java.io.File
 
 object T {
   def main(args: Array[String]): Unit = {
-    val accessToken =
-      sys.env get "GITHUB_API_TOKEN" getOrElse (sys error "Need to set GITHUB_API_TOKEN") pipe AccessToken
+    val accessToken = sys.env get "GITHUB_API_TOKEN"  map AccessToken getOrElse
+      (sys error "Need to set GITHUB_API_TOKEN")
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
     val appBaseDir = new File(".")
     val appClassLoader = this.getClass.getClassLoader
 
-    Play.start(new DefaultApplication(appBaseDir, appClassLoader, None, Mode.Dev))
+    Play start new DefaultApplication(appBaseDir, appClassLoader, None, Mode.Dev)
 
     try go(accessToken, org)
     finally Play.stop()
@@ -38,7 +38,7 @@ object T {
       withHeaders "Accept" -> "application/vnd.github.v3+json"
       withHeaders "Authorization" -> s"token $accessToken"
       get()
-      )
+    )
 
     val reposResp = reposFut.result()
 
