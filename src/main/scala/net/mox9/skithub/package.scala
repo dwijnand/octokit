@@ -2,6 +2,8 @@ package net.mox9
 
 import scala.language.implicitConversions
 
+import play.api.libs.json.{ Json, JsValue }
+
 import scala.{ concurrent => sc }
 import scala.concurrent.{ duration => scd }
 
@@ -14,7 +16,11 @@ package object skithub {
 
   implicit def DurationInt(n: Int): scd.DurationInt = scd.DurationInt(n)
 
-  implicit class FutureWithResult[T](private val f: Future[T]) extends AnyVal {
+  implicit class FutureW[T](private val f: Future[T]) extends AnyVal {
     @inline def result(atMost: Duration = 5.seconds): T = sc.Await.result(f, atMost)
+  }
+
+  implicit class JsValueW[T](private val json: JsValue) extends AnyVal {
+    def pp: String = Json prettyPrint json
   }
 }
