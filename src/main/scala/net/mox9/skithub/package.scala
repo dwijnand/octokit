@@ -4,15 +4,12 @@ import scala.language.implicitConversions
 
 import play.api.libs.json.{ JsObject, JsError, JsValue }
 
-import scala.concurrent.{ duration => scd }
-import scala.{ concurrent => sc }
-
 package object skithub {
   type ->[+A, +B]     = scala.Product2[A, B]
   type ?=>[-A, +B]    = scala.PartialFunction[A, B]
-  type Duration       = scd.Duration
-  type FiniteDuration = scd.FiniteDuration
-  type Future[+T]     = sc.Future[T]
+  type Duration       = scala.concurrent.duration.Duration
+  type FiniteDuration = scala.concurrent.duration.FiniteDuration
+  type Future[+T]     = scala.concurrent.Future[T]
   type JsonFormat[T]  = play.api.libs.json.Format[T]
 
   val ->         = scala.Product2
@@ -20,7 +17,8 @@ package object skithub {
   val Json       = play.api.libs.json.Json
   val JsonFormat = play.api.libs.json.Format
 
-  implicit def DurationInt(n: Int): scd.DurationInt = scd.DurationInt(n)
+  implicit def DurationInt(n: Int): scala.concurrent.duration.DurationInt =
+    scala.concurrent.duration.DurationInt(n)
 
   implicit class AnyW[T](private val x: T) extends AnyVal {
     @inline def toUnit(): Unit = ()
