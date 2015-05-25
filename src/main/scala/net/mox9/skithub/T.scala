@@ -25,7 +25,7 @@ object T {
   def go(accessToken: AccessToken, org: String): Unit = {
     val urlStr = s"https://api.github.com/orgs/$org/repos"
 
-    val repos: Seq[Repo] = getRepos(accessToken, urlStr)
+    val repos: Seq[Repo] = getRepos(accessToken, urlStr).result()
 
     s"${repos.length} repos".>>
 //    repos foreach (_.>>)
@@ -33,23 +33,36 @@ object T {
     ()
   }
 
-  def getRepos(accessToken: AccessToken, urlStr: String): Seq[Repo] = {
-    val reposFut = (WS
+  def getRepos(accessToken: AccessToken, urlStr: String): Future[Seq[Repo]] = (
+    getRepos1(accessToken, urlStr, Vector.empty)
+      map (_ recoverTotal (e => sys error s"Failed to read repos:\n${e.toFlatJson.pp}"))
+  )
+
+  def getRepos1(accessToken: AccessToken, urlStr: String, repos: Vector[Repo]): Future[JsResult[Seq[Repo]]] =
+    (WS
       url urlStr
       withHeaders        "Accept" -> "application/vnd.github.v3+json"
       withHeaders "Authorization" -> s"token $accessToken"
       get()
+      flatMap { resp =>
+        resp.json.validate[Seq[Repo]] match {
+          case jsS @ JsSuccess(moreRepos, _) =>
+            resp header "Link" flatMap getNextLink match {
+              case Some(nextUrlStr) => getRepos1(accessToken, nextUrlStr, repos ++ moreRepos)
+              case None             => Future successful jsS
+            }
+          case jsE: JsError                  =>
+            jsE.errors foreach { case path -> errors =>
+              val value = path.asSingleJson(resp.json)
+              s"Error at ${path.toJsonString}, value: $value, errors:".>>
+              errors foreach (err => f"${err.message}%35s : ${err.args.mkString("[","],[","]")}".>>)
+            }
+            Future successful jsE
+        }
+      }
     )
 
-    val reposResp = reposFut.result()
-
-    val linkOpt = reposResp header "Link"
-    val nextOpt = linkOpt flatMap (link => """<(.+)>; rel="next"""".r findFirstMatchIn link map (_ group 1))
-
-    val repos = reposResp.json.validate[Seq[Repo]] recoverTotal
-      (e => sys error s"Failed to read repos:\n${e.toFlatJson.pp}")
-    repos
-  }
+  def getNextLink(link: String) = """<(.+)>; rel="next"""".r findFirstMatchIn link map (_ group 1)
 }
 
 case class AccessToken(value: String) extends AnyVal {
