@@ -2,7 +2,7 @@ package net.mox9
 
 import scala.language.implicitConversions
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{ JsObject, JsError, JsValue }
 
 import scala.concurrent.{ duration => scd }
 import scala.{ concurrent => sc }
@@ -33,5 +33,9 @@ package object skithub {
 
   implicit class JsValueW[T](private val json: JsValue) extends AnyVal {
     @inline def pp: String = Json prettyPrint json
+  }
+
+  implicit class JsErrorW[T](private val e: JsError) extends AnyVal {
+    @inline def toFlatJson: JsObject = JsError toFlatJson e
   }
 }
