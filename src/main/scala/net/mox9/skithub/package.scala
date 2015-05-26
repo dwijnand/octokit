@@ -44,8 +44,8 @@ package object skithub {
     @inline def await30s: T                = f await 30.seconds
   }
 
-  @inline implicit class Any2PlayJsonW[T: Writes](private val x: T) extends AnyVal {
-    @inline def toJson: JsValue = Json toJson x
+  @inline implicit class Any2PlayJsonW[T](private val x: T) extends AnyVal {
+    @inline def toJson(implicit W: Writes[T]): JsValue = Json toJson x
   }
 
   @inline implicit class String2PlayJsonW(private val s: String) extends AnyVal {
