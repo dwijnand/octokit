@@ -36,6 +36,8 @@ package skithub {
     val ISO_8601_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     val UTC_TZ = java.util.TimeZone getTimeZone "UTC"
 
+    @inline def idFun[T] = (t: T) => t
+    @inline def const[T, U](x: T)(y: U): T = x
     @inline def nanoTime(): Long = java.lang.System.nanoTime
 
     def nowIso8601() =
@@ -63,7 +65,7 @@ package skithub {
       @inline def isOr(p: T => Boolean)(alt: => T): T   = if (p(x)) x else alt
 
       @inline def maybe[U](pf: T ?=> U): Option[U]      = pf lift x
-      @inline def matchOr[U](alt: => U)(pf: T ?=> U): U = pf.applyOrElse(x, _ => alt)
+      @inline def matchOr[U](alt: => U)(pf: T ?=> U): U = pf.applyOrElse(x, const(alt))
     }
 
     @inline implicit class DurationW(private val d: Duration) {
