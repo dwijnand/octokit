@@ -77,8 +77,7 @@ object T {
     try {
       val repos = github.orgs.getRepos(org)
       repos.await30s pipe (rs => s"${rs.length} repos".>>)
-    }
-    finally Play.stop()
+    } finally stop()
   }
 
   def newApp = new DefaultApplication(new File("."), this.getClass.getClassLoader, None, Mode.Dev)
