@@ -31,11 +31,11 @@ package skithub {
   class AnyW[T](private val x: T) extends AnyVal {
     @inline def toUnit(): Unit = ()
 
-    @inline def pipe[U](f: T => U): U     = f(x)
-    @inline def sideEffect(body: Unit): T = x
-    @inline def doto(f: T => Unit): T     = sideEffect(f(x))
+    @inline def pipe[U](f: T => U): U  = f(x)
+    @inline def sideEffect(u: Unit): T = x
+    @inline def doto(f: T => Unit): T  = sideEffect(f(x))
 
-    @inline def >>(): Unit = sideEffect(println(x)).toUnit()
+    @inline def >>(): Unit = println(x)
 
     @inline def maybe[U](pf: T ?=> U): Option[U] = pf lift x
   }
