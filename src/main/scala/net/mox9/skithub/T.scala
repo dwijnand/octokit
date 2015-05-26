@@ -45,16 +45,16 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
       withHeaders "Authorization" -> s"token ${connectionConfig.accessToken}"
       get()
       flatMap { resp =>
-      resp.json.validate[Seq[Repo]] match {
-        case JsSuccess(moreRepos, _) =>
-          resp header "Link" flatMap getNextLink match {
-            case Some(nextUrlStr) => getRepos1(connectionConfig, nextUrlStr, repos ++ moreRepos)
-            case None             => Future successful JsSuccess(repos ++ moreRepos)
-          }
-        case jsE: JsError            => Future successful jsE
+        resp.json.validate[Seq[Repo]] match {
+          case JsSuccess(moreRepos, _) =>
+            resp header "Link" flatMap getNextLink match {
+              case Some(nextUrlStr) => getRepos1(connectionConfig, nextUrlStr, repos ++ moreRepos)
+              case None             => Future successful JsSuccess(repos ++ moreRepos)
+            }
+          case jsE: JsError            => Future successful jsE
+        }
       }
-    }
-  )
+    )
 
   private def getNextLink(link: String) = """<(.+)>; rel="next"""".r findFirstMatchIn link map (_ group 1)
 }
