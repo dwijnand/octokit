@@ -1,7 +1,7 @@
 package net.mox9.skithub
 
 import play.api.Play.current
-import play.api.libs.json.JsResultException
+import play.api.libs.json.{ JsResultException, Reads, Writes }
 //import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.ws.{ WS, WSResponse }
 import play.api.{ DefaultApplication, Mode, Play }
@@ -15,7 +15,7 @@ case class UserAgent(value: String) extends AnyVal {
 
 sealed trait Credentials extends Any
 final case class BasicAuth(user: String, pass: String) extends Credentials
-final case class AccessToken(value: String) extends AnyVal with Credentials {
+case class AccessToken(value: String) extends AnyVal with Credentials {
   override def toString = value
 }
 
@@ -101,8 +101,20 @@ final case class Repo(
   name      : String,
   `private` : Boolean,
   fork      : Boolean,
-  language  : Option[String]
+  language  : Lang
 )
 object Repo {
   implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
 }
+
+sealed trait Lang extends Any { def value: String ; final override def toString = value }
+
+object Lang extends (String => Lang) {
+  def apply(s: String): Lang = s.trim pipe (s => if (s.isEmpty) NoLang else LangImpl(s))
+
+  implicit val jsFormat: JsonFormat[Lang] = JsonFormat(Reads.of[Option[String]] map { case None => NoLang ; case Some(s) => Lang(s) }, Writes(_.value.toJson))
+}
+
+case object NoLang extends Lang { val value = "" }
+
+case class LangImpl(value: String) extends AnyVal with Lang
