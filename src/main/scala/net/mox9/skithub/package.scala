@@ -2,7 +2,7 @@ package net.mox9
 
 import scala.language.implicitConversions
 
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{ Reads, Writes, JsObject, JsValue }
 
 // TODO: Rename to octokit.scala?
 package object skithub {
@@ -44,9 +44,22 @@ package object skithub {
     @inline def await30s: T                = f await 30.seconds
   }
 
-  @inline implicit class JsValueW[T](private val json: JsValue) extends AnyVal {
-    @inline def pp: String        = Json prettyPrint json
-    @inline def toJsonStr: String = Json stringify json
+  @inline implicit class Any2PlayJsonW[T: Writes](private val x: T) extends AnyVal {
+    @inline def toJson: JsValue = Json toJson x
+  }
+
+  @inline implicit class String2PlayJsonW(private val s: String) extends AnyVal {
+    @inline def jsonParse: JsValue = Json parse s
+  }
+
+  @inline implicit class ByteArray2PlayJsonW(private val bs: Array[Byte]) extends AnyVal {
+    @inline def jsonParse: JsValue = Json parse bs
+  }
+
+  @inline implicit class JsValueW(private val json: JsValue) extends AnyVal {
+    @inline def pp: String                      = Json prettyPrint json
+    @inline def toJsonStr: String               = Json stringify json
+    @inline def fromJson[T: Reads]: JsResult[T] = Json fromJson json
   }
 
   @inline implicit class JsErrorW[T](private val e: JsError) extends AnyVal {
