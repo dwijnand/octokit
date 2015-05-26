@@ -3,7 +3,7 @@ package net.mox9.skithub
 import play.api.Play.current
 import play.api.libs.json.JsResultException
 //import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.ws.WS
+import play.api.libs.ws.{ WS, WSResponse }
 import play.api.{ DefaultApplication, Mode, Play }
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -27,37 +27,41 @@ final class GitHubClient(connectionConfig: ConnectionConfig) {
 }
 
 final class OrgsClient(connectionConfig: ConnectionConfig) {
-  def getRepos(org: String): Future[Seq[Repo]] = (
-    getRepos1(connectionConfig, s"https://api.github.com/orgs/$org/repos", Vector.empty)
+  def getRepos(org: String): Future[Seq[Repo]] =
+    (getRepos1(org, 1)
+      flatMap { resp =>
+        resp.json.validate[Seq[Repo]] match {
+          case JsSuccess(repos, _) =>
+            resp header "Link" flatMap getPageCount match {
+              case Some(pageCount) =>
+                (2 to pageCount
+                  map (p => getRepos1(org, p) map (_.json.validate[Seq[Repo]]))
+                  futSeq()
+                  map (_ reduce ((res1, res2) => for (rs1 <- res1; rs2 <- res2) yield rs1 ++ rs2))
+                )
+              case None            => Future successful JsSuccess(repos)
+            }
+          case jsError             => Future successful jsError
+        }
+      }
       flatMap {
         case JsSuccess(repos, _) => Future successful repos
         case JsError(errors)     => Future failed JsResultException(errors)
       }
-  )
+    )
 
-  private def getRepos1(
-    connectionConfig: ConnectionConfig, urlStr: String, repos: Vector[Repo]
-  ): Future[JsResult[Seq[Repo]]] =
+  private def getRepos1(org: String, pageNum: Int): Future[WSResponse] =
     (WS
-      url urlStr
+      url s"https://api.github.com/orgs/$org/repos"
+      withQueryString      "page" -> s"$pageNum"
       withHeaders    "User-Agent" -> s"${connectionConfig.userAgent}"
       withHeaders        "Accept" ->  "application/vnd.github.v3+json"
       withHeaders "Authorization" -> s"token ${connectionConfig.accessToken}"
-      withQueryString "per_page" -> "100"
       get()
-      flatMap { resp =>
-        resp.json.validate[Seq[Repo]] match {
-          case JsSuccess(moreRepos, _) =>
-            resp header "Link" flatMap getNextLink match {
-              case Some(nextUrlStr) => getRepos1(connectionConfig, nextUrlStr, repos ++ moreRepos)
-              case None             => Future successful JsSuccess(repos ++ moreRepos)
-            }
-          case jsE: JsError            => Future successful jsE
-        }
-      }
     )
 
-  private def getNextLink(link: String) = """<(.+)>; rel="next"""".r findFirstMatchIn link map (_ group 1)
+  private def getPageCount(link: String) =
+    """<.+[?&]page=(\d+).*>; rel="last"""".r findFirstMatchIn link map (_ group 1 toInt)
 }
 
 object T {
