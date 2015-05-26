@@ -39,6 +39,13 @@ package skithub {
     def nowIso8601() =
       new java.text.SimpleDateFormat(ISO_8601_FMT) doto (_ setTimeZone UTC_TZ) format new java.util.Date()
 
+    def timed[T](body: => T): T -> Duration = {
+      val t0 = nanoTime()
+      val t = body
+      val t1 = nanoTime()
+      t -> (Duration fromNanos t1 - t0)
+    }
+
     @inline implicit def DurationInt(n: Int) = scala.concurrent.duration.DurationInt(n)
 
     @inline implicit class AnyW[T](private val x: T) {
