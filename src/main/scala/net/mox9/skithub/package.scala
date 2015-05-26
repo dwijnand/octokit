@@ -58,7 +58,11 @@ package skithub {
 
       @inline def >>(): Unit = println(x)
 
-      @inline def maybe[U](pf: T ?=> U): Option[U] = pf lift x
+      @inline def requiring(p: T => Boolean): Option[T] = if (p(x)) Some(x) else None
+      @inline def isOr(p: T => Boolean)(alt: => T): T   = if (p(x)) x else alt
+
+      @inline def maybe[U](pf: T ?=> U): Option[U]      = pf lift x
+      @inline def matchOr[U](alt: => U)(pf: T ?=> U): U = pf.applyOrElse(x, _ => alt)
     }
 
     @inline implicit class DurationW(private val d: Duration) {
