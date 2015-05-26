@@ -76,8 +76,12 @@ object T {
     start()
 
     try {
-      val repos = github.orgs.getRepos(org)
-      repos.await30s pipe (rs => s"${rs.length} repos".>>)
+      val repos -> elapsed = timed {
+        github.orgs getRepos org await30s
+      }
+      repos pipe (rs => s"${rs.length} repos".>>)
+
+      s"Took: ${elapsed.toHHmmssSSS}".>>
     } finally stop()
   }
 
