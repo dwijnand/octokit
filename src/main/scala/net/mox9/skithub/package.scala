@@ -22,8 +22,7 @@ package skithub {
     @inline val ->     = scala.Product2
     @inline val Future = scala.concurrent.Future
 
-    @inline implicit def DurationInt(n: Int): scala.concurrent.duration.DurationInt =
-      scala.concurrent.duration.DurationInt(n)
+    @inline implicit def DurationInt(n: Int) = scala.concurrent.duration.DurationInt(n)
 
     @inline implicit def anyW[T](x: T)            = new AnyW(x)
     @inline implicit def futureW[T](f: Future[T]) = new FutureW(f)
