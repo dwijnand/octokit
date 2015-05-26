@@ -7,6 +7,7 @@ import play.api.libs.json.{ Reads, Writes, JsObject, JsValue }
 // TODO: Rename to octokit.scala?
 // TODO: tabulate/Tabulate class/.tt ext method
 // TODO: tabulate implicits trait
+// TODO: TODO look into NSME: commit 612b11957b
 package object skithub
   extends ScalaImplicits
      with PlayJsonImplicits
