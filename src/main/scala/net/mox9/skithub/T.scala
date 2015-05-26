@@ -43,6 +43,7 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
       withHeaders    "User-Agent" -> s"${connectionConfig.userAgent}"
       withHeaders        "Accept" ->  "application/vnd.github.v3+json"
       withHeaders "Authorization" -> s"token ${connectionConfig.accessToken}"
+      withQueryString "per_page" -> "100"
       get()
       flatMap { resp =>
         resp.json.validate[Seq[Repo]] match {
