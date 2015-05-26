@@ -42,6 +42,17 @@ package skithub {
       @inline def await5s: T                 = f await 5.seconds
       @inline def await30s: T                = f await 30.seconds
     }
+
+    @inline implicit class MapW[K, V](private val xs: Traversable[K -> V]) {
+      @inline def maxKeyLen = xs.toIterator.map(_._1.toString.length).max
+      @inline def tabularkv = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
+      @inline def showkv()  = tabularkv foreach println
+    }
+
+    @inline implicit class MultimapW[K, V](private val xs: Traversable[K -> Traversable[V]]) {
+      @inline def tabularkvs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
+      @inline def showkvs()  = tabularkvs foreach println
+    }
   }
 
   trait PlayJsonImplicits {
