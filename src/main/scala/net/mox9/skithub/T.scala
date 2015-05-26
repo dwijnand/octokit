@@ -84,6 +84,7 @@ object T {
   def newApp = new DefaultApplication(new File("."), this.getClass.getClassLoader, None, Mode.Dev)
 
   def start() = Play start newApp
+  def stop()  = Play.stop()
 }
 
 // ISO-8601: YYYY-MM-DDTHH:MM:SSZ
