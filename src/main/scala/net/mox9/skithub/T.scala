@@ -60,26 +60,30 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
 }
 
 object T {
-  def main(args: Array[String]): Unit = {
-    val userAgent = UserAgent("dwijnand")
-    val accessToken = sys.env get "GITHUB_API_TOKEN"  map AccessToken getOrElse
-      (sys error "Need to set GITHUB_API_TOKEN")
+  val userAgent = UserAgent("dwijnand")
 
+  val accessToken =
+    sys.env get "GITHUB_API_TOKEN"  map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
+
+  val connectionConfig = ConnectionConfig(userAgent, accessToken)
+
+  val github = new GitHubClient(connectionConfig)
+
+  def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
     start()
 
     try {
-      val github = new GitHubClient(ConnectionConfig(userAgent, accessToken))
       val repos = github.orgs.getRepos(org)
       repos.await30s pipe (rs => s"${rs.length} repos".>>)
     }
     finally Play.stop()
   }
 
-  private def newApp = new DefaultApplication(new File("."), this.getClass.getClassLoader, None, Mode.Dev)
+  def newApp = new DefaultApplication(new File("."), this.getClass.getClassLoader, None, Mode.Dev)
 
-  private def start() = Play start newApp
+  def start() = Play start newApp
 }
 
 // ISO-8601: YYYY-MM-DDTHH:MM:SSZ
