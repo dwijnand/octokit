@@ -24,29 +24,26 @@ package skithub {
 
     @inline implicit def DurationInt(n: Int) = scala.concurrent.duration.DurationInt(n)
 
-    @inline implicit def anyW[T](x: T)            = new AnyW(x)
-    @inline implicit def futureW[T](f: Future[T]) = new FutureW(f)
+    @inline implicit class AnyW[T](private val x: T) {
+      @inline def toUnit(): Unit = ()
+
+      @inline def pipe[U](f: T => U): U  = f(x)
+      @inline def sideEffect(u: Unit): T = x
+      @inline def doto(f: T => Unit): T  = sideEffect(f(x))
+
+      @inline def >>(): Unit = println(x)
+
+      @inline def maybe[U](pf: T ?=> U): Option[U] = pf lift x
+    }
+
+    @inline implicit class FutureW[T](private val f: Future[T]) {
+      @inline def await(atMost: Duration): T = scala.concurrent.Await.result(f, atMost)
+      @inline def await5s: T                 = f await 5.seconds
+      @inline def await30s: T                = f await 30.seconds
+    }
   }
 
-  class AnyW[T](private val x: T) extends AnyVal {
-    @inline def toUnit(): Unit = ()
-
-    @inline def pipe[U](f: T => U): U  = f(x)
-    @inline def sideEffect(u: Unit): T = x
-    @inline def doto(f: T => Unit): T  = sideEffect(f(x))
-
-    @inline def >>(): Unit = println(x)
-
-    @inline def maybe[U](pf: T ?=> U): Option[U] = pf lift x
-  }
-
-  class FutureW[T](private val f: Future[T]) extends AnyVal {
-    @inline def await(atMost: Duration): T = scala.concurrent.Await.result(f, atMost)
-    @inline def await5s: T                 = f await 5.seconds
-    @inline def await30s: T                = f await 30.seconds
-  }
-
-  trait PlayJsonImplicits extends ScalaImplicits {
+  trait PlayJsonImplicits {
     @inline type JsonFormat[T] = play.api.libs.json.Format[T]
     @inline type JsError       = play.api.libs.json.JsError
     @inline type JsResult[+T]  = play.api.libs.json.JsResult[T]
@@ -57,32 +54,26 @@ package skithub {
     @inline val JsError    = play.api.libs.json.JsError
     @inline val JsSuccess  = play.api.libs.json.JsSuccess
 
-    @inline implicit def any2PlayJsonW[T](x: T)               = new Any2PlayJsonW(x)
-    @inline implicit def string2PlayJsonW(s: String)          = new String2PlayJsonW(s)
-    @inline implicit def byteArray2PlayJsonW(bs: Array[Byte]) = new ByteArray2PlayJsonW(bs)
-    @inline implicit def jsValueW(json: JsValue)              = new JsValueW(json)
-    @inline implicit def jsErrorW[T](e: JsError)              = new JsErrorW(e)
-  }
+    @inline implicit class Any2PlayJsonW[T](private val x: T) {
+      @inline def toJson(implicit W: Writes[T]): JsValue = Json toJson x
+    }
 
-  class Any2PlayJsonW[T](private val x: T) extends AnyVal {
-    @inline def toJson(implicit W: Writes[T]): JsValue = Json toJson x
-  }
+    @inline implicit class String2PlayJsonW(private val s: String) {
+      @inline def jsonParse: JsValue = Json parse s
+    }
 
-  class String2PlayJsonW(private val s: String) extends AnyVal {
-    @inline def jsonParse: JsValue = Json parse s
-  }
+    @inline implicit class ByteArray2PlayJsonW(private val bs: Array[Byte]) {
+      @inline def jsonParse: JsValue = Json parse bs
+    }
 
-  class ByteArray2PlayJsonW(private val bs: Array[Byte]) extends AnyVal {
-    @inline def jsonParse: JsValue = Json parse bs
-  }
+    @inline implicit class JsValueW(private val json: JsValue) {
+      @inline def pp: String                      = Json prettyPrint json
+      @inline def toJsonStr: String               = Json stringify json
+      @inline def fromJson[T: Reads]: JsResult[T] = Json fromJson json
+    }
 
-  class JsValueW(private val json: JsValue) extends AnyVal {
-    @inline def pp: String                      = Json prettyPrint json
-    @inline def toJsonStr: String               = Json stringify json
-    @inline def fromJson[T: Reads]: JsResult[T] = Json fromJson json
-  }
-
-  class JsErrorW[T](private val e: JsError) extends AnyVal {
-    @inline def toFlatJson: JsObject = JsError toFlatJson e
+    @inline implicit class JsErrorW[T](private val e: JsError) {
+      @inline def toFlatJson: JsObject = JsError toFlatJson e
+    }
   }
 }
