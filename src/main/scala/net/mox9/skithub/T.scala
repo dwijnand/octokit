@@ -90,7 +90,6 @@ object T {
 
 final case class Repo(
   name      : String,
-  full_name : String,
   `private` : Boolean,
   fork      : Boolean,
   language  : Option[String]
