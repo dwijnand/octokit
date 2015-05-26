@@ -1,5 +1,6 @@
 package net.mox9
 
+import scala.language.higherKinds
 import scala.language.implicitConversions
 
 import play.api.libs.json.{ Reads, Writes, JsObject, JsValue }
@@ -14,14 +15,17 @@ package object skithub
 
 package skithub {
   trait ScalaImplicits {
-    @inline type ->[+A, +B]     = scala.Product2[A, B]
-    @inline type ?=>[-A, +B]    = scala.PartialFunction[A, B]
-    @inline type Duration       = scala.concurrent.duration.Duration
-    @inline type FiniteDuration = scala.concurrent.duration.FiniteDuration
-    @inline type Future[+T]     = scala.concurrent.Future[T]
+    @inline type ->[+A, +B]             = scala.Product2[A, B]
+    @inline type ?=>[-A, +B]            = scala.PartialFunction[A, B]
+    @inline type CBF[-From, -Elem, +To] = scala.collection.generic.CanBuildFrom[From, Elem, To]
+    @inline type Duration               = scala.concurrent.duration.Duration
+    @inline type ExecutionContext       = scala.concurrent.ExecutionContext
+    @inline type FiniteDuration         = scala.concurrent.duration.FiniteDuration
+    @inline type Future[+T]             = scala.concurrent.Future[T]
 
-    @inline val ->     = scala.Product2
-    @inline val Future = scala.concurrent.Future
+    @inline val ->               = scala.Product2
+    @inline val ExecutionContext = scala.concurrent.ExecutionContext
+    @inline val Future           = scala.concurrent.Future
 
     @inline implicit def DurationInt(n: Int) = scala.concurrent.duration.DurationInt(n)
 
@@ -41,6 +45,11 @@ package skithub {
       @inline def await(atMost: Duration): T = scala.concurrent.Await.result(f, atMost)
       @inline def await5s: T                 = f await 5.seconds
       @inline def await30s: T                = f await 30.seconds
+    }
+
+    @inline implicit class TravFuture[A, M[X] <: Traversable[X]](private val fs: M[Future[A]]) {
+      def futSeq()(implicit cbf: CBF[M[Future[A]], A, M[A]], executor: ExecutionContext): Future[M[A]] =
+        Future sequence fs
     }
 
     @inline implicit class MapW[K, V](private val xs: Traversable[K -> V]) {
