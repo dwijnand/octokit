@@ -5,6 +5,8 @@ import scala.language.implicitConversions
 
 import play.api.libs.json.{ Reads, Writes, JsObject, JsValue }
 
+import java.util.concurrent.TimeUnit
+
 // TODO: Rename to octokit.scala?
 // TODO: tabulate/Tabulate class/.tt ext method
 // TODO: tabulate implicits trait
@@ -24,8 +26,18 @@ package skithub {
     @inline type Future[+T]             = scala.concurrent.Future[T]
 
     @inline val ->               = scala.Product2
+    @inline val Duration         = scala.concurrent.duration.Duration
     @inline val ExecutionContext = scala.concurrent.ExecutionContext
+    @inline val FiniteDuration   = scala.concurrent.duration.FiniteDuration
     @inline val Future           = scala.concurrent.Future
+
+    val ISO_8601_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    val UTC_TZ = java.util.TimeZone getTimeZone "UTC"
+
+    @inline def nanoTime(): Long = java.lang.System.nanoTime
+
+    def nowIso8601() =
+      new java.text.SimpleDateFormat(ISO_8601_FMT) doto (_ setTimeZone UTC_TZ) format new java.util.Date()
 
     @inline implicit def DurationInt(n: Int) = scala.concurrent.duration.DurationInt(n)
 
@@ -39,6 +51,19 @@ package skithub {
       @inline def >>(): Unit = println(x)
 
       @inline def maybe[U](pf: T ?=> U): Option[U] = pf lift x
+    }
+
+    @inline implicit class DurationW(private val d: Duration) {
+      def toHHmmssSSS = {
+        val l = d.toMillis
+
+        val hrs  = TimeUnit.MILLISECONDS toHours   l
+        val mins = TimeUnit.MILLISECONDS toMinutes l - (TimeUnit.HOURS toMillis hrs)
+        val secs = TimeUnit.MILLISECONDS toSeconds l - (TimeUnit.HOURS toMillis hrs) - (TimeUnit.MINUTES toMillis mins)
+        val ms   = TimeUnit.MILLISECONDS toMillis  l - (TimeUnit.HOURS toMillis hrs) - (TimeUnit.MINUTES toMillis mins) - (TimeUnit.SECONDS toMillis secs)
+
+        f"$hrs%02d:$mins%02d:$secs%02d.$ms%03d"
+      }
     }
 
     @inline implicit class FutureW[T](private val f: Future[T]) {
