@@ -9,7 +9,7 @@ import play.api.{ DefaultApplication, Mode, Play }
 import scala.concurrent.ExecutionContext.Implicits._
 import java.io.File
 
-final case class UserAgent(value: String) extends AnyVal {
+case class UserAgent(value: String) extends AnyVal {
   override def toString = value
 }
 
@@ -20,7 +20,7 @@ final case class AccessToken(value: String) extends AnyVal with Credentials {
 }
 
 // TODO: Use Credentials
-case class ConnectionConfig(userAgent: UserAgent, accessToken: AccessToken)
+final case class ConnectionConfig(userAgent: UserAgent, accessToken: AccessToken)
 
 final class GitHubClient(connectionConfig: ConnectionConfig) {
   val orgs = new OrgsClient(connectionConfig)
