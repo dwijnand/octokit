@@ -13,8 +13,9 @@ import java.util.concurrent.TimeUnit
 // TODO: look into NSME: commit 612b11957b
 // TODO: Migrate to Play 2.4
 // TODO: Explore github.orgs("org-name").repos  .get?
+// TODO: Make aliases final?
 package object skithub
-  extends ScalaImplicits
+  extends    ScalaImplicits
      with PlayJsonImplicits
 
 package skithub {
