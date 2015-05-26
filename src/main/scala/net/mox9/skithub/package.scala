@@ -93,6 +93,29 @@ package skithub {
         Future sequence fs
     }
 
+    @inline implicit class IntWithAlign(private val x: Int) {
+      @inline def lalign: String = if (x == 0) "%s" else s"%-${x}s"
+      @inline def ralign: String = if (x == 0) "%s" else s"%${x}s"
+    }
+    @inline def lalign(width: Int): String = width.lalign
+    @inline def ralign(width: Int): String = width.ralign
+
+    @inline implicit class TravProdWithTabular[T <: Product](private val xs: Traversable[T]) {
+      @inline def tabularps = {
+        xs.headOption match {
+          case None    => Nil
+          case Some(h) =>
+            val rows = xs map (_.productIterator.toVector map (_.toString))
+            val cols = 0 until h.productArity map (idx => xs map (_.productElement(idx).toString))
+
+            val widths = cols map (col => col map (_.length) max)
+            val rowFormat = widths map ralign mkString " "
+            rows map (row => rowFormat.format(row.seq: _*))
+        }
+      }
+      @inline def showps()  = tabularps foreach println
+    }
+
     @inline implicit class MapWithTabular[K, V](private val xs: Traversable[K -> V]) {
       @inline def maxKeyLen = xs.toIterator.map(_._1.toString.length).max
       @inline def tabularkv = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
