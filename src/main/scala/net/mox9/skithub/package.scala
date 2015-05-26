@@ -10,7 +10,8 @@ import java.util.concurrent.TimeUnit
 // TODO: Rename to octokit.scala?
 // TODO: tabulate/Tabulate class/.tt ext method
 // TODO: tabulate implicits trait
-// TODO: TODO look into NSME: commit 612b11957b
+// TODO: look into NSME: commit 612b11957b
+// TODO: Migrate to Play 2.4
 package object skithub
   extends ScalaImplicits
      with PlayJsonImplicits
