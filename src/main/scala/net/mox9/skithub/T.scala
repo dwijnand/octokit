@@ -1,9 +1,7 @@
 package net.mox9.skithub
 
 import play.api.Play.current
-import play.api.libs.json.{ JsResultException, Reads, Writes }
 //import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.ws.{ WS, WSResponse }
 import play.api.{ DefaultApplication, Mode, Play }
 
 import scala.concurrent.ExecutionContext.Implicits._

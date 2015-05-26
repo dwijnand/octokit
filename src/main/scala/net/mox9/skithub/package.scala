@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit
 package object skithub
   extends    ScalaImplicits
      with PlayJsonImplicits
+     with   PlayWsImplicits
 
 package skithub {
   trait ScalaImplicits {
@@ -129,15 +130,21 @@ package skithub {
   }
 
   trait PlayJsonImplicits {
-    @inline type JsonFormat[T] = play.api.libs.json.Format[T]
-    @inline type JsError       = play.api.libs.json.JsError
-    @inline type JsResult[+T]  = play.api.libs.json.JsResult[T]
-    @inline type JsSuccess[T]  = play.api.libs.json.JsSuccess[T]
+    @inline type JsError           = play.api.libs.json.JsError
+    @inline type JsResultException = play.api.libs.json.JsResultException
+    @inline type JsResult[+T]      = play.api.libs.json.JsResult[T]
+    @inline type JsSuccess[T]      = play.api.libs.json.JsSuccess[T]
+    @inline type JsonFormat[T]     = play.api.libs.json.Format[T]
+    @inline type Reads[T]          = play.api.libs.json.Reads[T]
+    @inline type Writes[-T]        = play.api.libs.json.Writes[T]
 
-    @inline val Json       = play.api.libs.json.Json
-    @inline val JsonFormat = play.api.libs.json.Format
-    @inline val JsError    = play.api.libs.json.JsError
-    @inline val JsSuccess  = play.api.libs.json.JsSuccess
+    @inline val JsError           = play.api.libs.json.JsError
+    @inline val JsResultException = play.api.libs.json.JsResultException
+    @inline val JsSuccess         = play.api.libs.json.JsSuccess
+    @inline val Json              = play.api.libs.json.Json
+    @inline val JsonFormat        = play.api.libs.json.Format
+    @inline val Reads             = play.api.libs.json.Reads
+    @inline val Writes            = play.api.libs.json.Writes
 
     @inline implicit class Any2PlayJsonW[T](private val x: T) {
       @inline def toJson(implicit W: Writes[T]): JsValue = Json toJson x
@@ -160,5 +167,11 @@ package skithub {
     @inline implicit class JsErrorW[T](private val e: JsError) {
       @inline def toFlatJson: JsObject = JsError toFlatJson e
     }
+  }
+
+  trait PlayWsImplicits {
+    @inline type WSResponse = play.api.libs.ws.WSResponse
+
+    @inline val WS = play.api.libs.ws.WS
   }
 }
