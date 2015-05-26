@@ -5,6 +5,8 @@ import scala.language.implicitConversions
 import play.api.libs.json.{ Reads, Writes, JsObject, JsValue }
 
 // TODO: Rename to octokit.scala?
+// TODO: tabulate/Tabulate class/.tt ext method
+// TODO: tabulate implicits trait
 package object skithub {
   @inline type ->[+A, +B]     = scala.Product2[A, B]
   @inline type ?=>[-A, +B]    = scala.PartialFunction[A, B]
