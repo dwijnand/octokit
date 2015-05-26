@@ -8,6 +8,19 @@ import play.api.{ DefaultApplication, Mode, Play }
 import scala.concurrent.ExecutionContext.Implicits._
 import java.io.File
 
+final case class UserAgent(value: String) extends AnyVal {
+  override def toString = value
+}
+
+sealed trait Credentials extends Any
+final case class BasicAuth(user: String, pass: String) extends Credentials
+final case class AccessToken(value: String) extends AnyVal with Credentials {
+  override def toString = value
+}
+
+// TODO: Use Credentials
+final class GitHubClient(userAgent: UserAgent, accessToken: AccessToken)
+
 object T {
   def main(args: Array[String]): Unit = {
     val userAgent = "dwijnand"
@@ -64,13 +77,9 @@ object T {
   def getNextLink(link: String) = """<(.+)>; rel="next"""".r findFirstMatchIn link map (_ group 1)
 }
 
-case class AccessToken(value: String) extends AnyVal {
-  override def toString = value
-}
-
 // ISO-8601: YYYY-MM-DDTHH:MM:SSZ
 
-case class Repo(
+final case class Repo(
   name      : String,
   full_name : String,
   `private` : Boolean,
