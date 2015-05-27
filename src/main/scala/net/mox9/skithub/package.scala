@@ -101,7 +101,10 @@ package skithub {
     }
 
     @inline implicit class TravOneFutureW[T, M[X] <: TravOnce[X]](private val fs: M[Future[T]]) {
-      def sequence(implicit cbf: CBF[M[Future[T]], T, M[T]], ec: ExecCtx): Future[M[T]] = Future sequence fs
+      def sequence(implicit cbf: CBF[M[Future[T]], T, M[T]], ec: ExecCtx): Future[M[T]]      = Future sequence fs
+      def firstCompletedOf                         (implicit ec: ExecCtx): Future[T]         = Future firstCompletedOf fs
+      def find(p: T => Boolean)                    (implicit ec: ExecCtx): Future[Option[T]] = Future.find(fs)(p)
+      def fold[R](z: R)(op: (R, T) => R)           (implicit ec: ExecCtx): Future[R]         = Future.fold(fs)(z)(op)
     }
 
     @inline implicit class IntWithAlign(private val x: Int) {
