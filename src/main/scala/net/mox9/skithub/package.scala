@@ -93,9 +93,13 @@ package skithub {
       @inline def await30s: T                = f await 30.seconds
     }
 
-    @inline implicit class TravFuture[A, M[X] <: Traversable[X]](private val fs: M[Future[A]]) {
-      def futSeq()(implicit cbf: CBF[M[Future[A]], A, M[A]], executor: ExecCtx): Future[M[A]] =
-        Future sequence fs
+    @inline implicit class TravOnceW[T, M[X] <: TravOnce[X]](private val xs: M[T]) {
+      def traverse[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx): Future[M[U]] =
+        Future.traverse(xs)(f)
+    }
+
+    @inline implicit class TravOneFutureW[T, M[X] <: TravOnce[X]](private val fs: M[Future[T]]) {
+      def sequence(implicit cbf: CBF[M[Future[T]], T, M[T]], ec: ExecCtx): Future[M[T]] = Future sequence fs
     }
 
     @inline implicit class IntWithAlign(private val x: Int) {
