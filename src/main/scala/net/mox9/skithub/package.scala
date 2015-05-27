@@ -25,15 +25,19 @@ package skithub {
     @inline type ?=>[-A, +B]            = scala.PartialFunction[A, B]
     @inline type CBF[-From, -Elem, +To] = scala.collection.generic.CanBuildFrom[From, Elem, To]
     @inline type Duration               = scala.concurrent.duration.Duration
-    @inline type ExecutionContext       = scala.concurrent.ExecutionContext
+    @inline type ExecCtx                = scala.concurrent.ExecutionContext
     @inline type FiniteDuration         = scala.concurrent.duration.FiniteDuration
     @inline type Future[+T]             = scala.concurrent.Future[T]
+    @inline type Trav[+A]               = scala.collection.Traversable[A]
+    @inline type TravOnce[+A]           = scala.collection.TraversableOnce[A]
 
     @inline val ->               = scala.Product2
     @inline val Duration         = scala.concurrent.duration.Duration
-    @inline val ExecutionContext = scala.concurrent.ExecutionContext
+    @inline val ExecCtx          = scala.concurrent.ExecutionContext
     @inline val FiniteDuration   = scala.concurrent.duration.FiniteDuration
     @inline val Future           = scala.concurrent.Future
+    @inline val Trav             = scala.collection.Traversable
+    @inline val TravOnce         = scala.collection.TraversableOnce
 
     val ISO_8601_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     val UTC_TZ = java.util.TimeZone getTimeZone "UTC"
@@ -90,7 +94,7 @@ package skithub {
     }
 
     @inline implicit class TravFuture[A, M[X] <: Traversable[X]](private val fs: M[Future[A]]) {
-      def futSeq()(implicit cbf: CBF[M[Future[A]], A, M[A]], executor: ExecutionContext): Future[M[A]] =
+      def futSeq()(implicit cbf: CBF[M[Future[A]], A, M[A]], executor: ExecCtx): Future[M[A]] =
         Future sequence fs
     }
 
