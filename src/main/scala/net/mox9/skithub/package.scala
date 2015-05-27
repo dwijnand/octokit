@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit
 // TODO: Migrate to Play 2.4
 // TODO: Explore github.orgs("org-name").repos  .get?
 // TODO: Make aliases final?
+// TODO: Switch to WSClient
 package object skithub
   extends    ScalaImplicits
      with PlayJsonImplicits
