@@ -30,9 +30,8 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
           case JsSuccess(repos, _) =>
             resp header "Link" flatMap getPageCount match {
               case Some(pageCount) =>
-                (2 to pageCount
-                  map (p => getRepos1(org, p) map (_.json.validate[Seq[Repo]]))
-                  pipe (_.sequence)
+                ((2 to pageCount).toVector
+                  traverse (p => getRepos1(org, p) map (_.json.validate[Seq[Repo]]))
                   map (_ reduce ((res1, res2) => for (rs1 <- res1; rs2 <- res2) yield rs1 ++ rs2))
                 )
               case None            => Future successful JsSuccess(repos)
