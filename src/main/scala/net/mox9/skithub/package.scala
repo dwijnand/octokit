@@ -3,7 +3,7 @@ package net.mox9
 import scala.language.higherKinds
 import scala.language.implicitConversions
 
-import play.api.libs.json.{ Reads, Writes, JsObject, JsValue }
+import play.api.libs.json.{ JsObject, JsValue }
 
 import java.util.concurrent.TimeUnit
 
@@ -101,17 +101,28 @@ package skithub {
     @inline def lalign(width: Int): String = width.lalign
     @inline def ralign(width: Int): String = width.ralign
 
+    private def trimHeader(h: String): Int => String = {
+      case i if i >= h.length => h
+      case i if i > 5         => h.substring(0, i - 2) + ".."
+      case i if i > 1         => h.substring(0, i - 1) + "-"
+      case _                  => h.substring(0, 1)
+    }
+
     @inline implicit class TravProdWithTabular[T <: Product](private val xs: Traversable[T]) {
       @inline def tabularps = {
         xs.headOption match {
           case None    => Nil
           case Some(h) =>
-            val rows = xs map (_.productIterator.toVector map (_.toString))
-            val cols = 0 until h.productArity map (idx => xs map (_.productElement(idx).toString))
+            val rows = xs.toVector map (_.productIterator.toVector map (_.toString))
+            val cols = (0 until h.productArity).toVector map (idx => xs map (_.productElement(idx).toString))
 
             val widths = cols map (col => col map (_.length) max)
+
+            val headers0 = h.getClass.getDeclaredFields.toVector map (_.getName)
+            val headers = headers0 zip widths map Function.uncurried(trimHeader _).tupled
+
             val rowFormat = widths map ralign mkString " "
-            rows map (row => rowFormat.format(row.seq: _*))
+            (headers +: rows) map (row => rowFormat.format(row.seq: _*))
         }
       }
       @inline def showps()  = tabularps foreach println
