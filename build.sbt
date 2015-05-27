@@ -37,7 +37,8 @@ triggeredMessage := Watched.clearWhenTriggered
   wartremoverWarnings += Wart.TryPartial
   wartremoverWarnings += Wart.Var
 
-libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.3.9"
+//libraryDependencies += "com.squareup.okhttp"  % "okhttp"  % "2.4.0"
+  libraryDependencies += "com.typesafe.play"   %% "play-ws" % "2.3.9"
 
 initialCommands in console += "\nimport net.mox9.skithub._"
 
