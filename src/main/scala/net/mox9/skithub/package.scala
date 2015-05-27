@@ -116,7 +116,7 @@ package skithub {
       case _                  => h.substring(0, 1)
     }
 
-    @inline implicit class TravProdWithTabular[T <: Product](private val xs: Traversable[T]) {
+    @inline implicit class TravProdWithTabular[T <: Product](private val xs: Trav[T]) {
       @inline def tabularps = {
         xs.headOption match {
           case None    => Nil
@@ -136,13 +136,13 @@ package skithub {
       @inline def showps()  = tabularps foreach println
     }
 
-    @inline implicit class MapWithTabular[K, V](private val xs: Traversable[K -> V]) {
+    @inline implicit class MapWithTabular[K, V](private val xs: Trav[K -> V]) {
       @inline def maxKeyLen = xs.toIterator.map(_._1.toString.length).max
       @inline def tabularkv = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
       @inline def showkv()  = tabularkv foreach println
     }
 
-    @inline implicit class MultimapWithTabular[K, V](private val xs: Traversable[K -> Traversable[V]]) {
+    @inline implicit class MultimapWithTabular[K, V](private val xs: Trav[K -> Trav[V]]) {
       @inline def tabularkvs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
       @inline def showkvs()  = tabularkvs foreach println
     }
