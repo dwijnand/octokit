@@ -140,13 +140,13 @@ package skithub {
 
     @inline implicit class MapWithTabular[K, V](private val xs: Trav[K -> V]) {
       @inline def maxKeyLen = xs.toIterator.map(_._1.toString.length).max
-      @inline def tabularkv = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
-      @inline def showkv()  = tabularkv foreach println
+      @inline def tabularKV = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
+      @inline def showKV()  = tabularKV foreach println
     }
 
     @inline implicit class MultimapWithTabular[K, V](private val xs: Trav[K -> Trav[V]]) {
-      @inline def tabularkvs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
-      @inline def showkvs()  = tabularkvs foreach println
+      @inline def tabularKVs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
+      @inline def showKVs()  = tabularKVs foreach println
     }
   }
 
