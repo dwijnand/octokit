@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 // TODO: Explore github.orgs("org-name").repos  .get?
 // TODO: Make aliases final?
 // TODO: Switch to WSClient
+// TODO: Handle HTTP codes. Abstraction?
 package object skithub
   extends    ScalaImplicits
      with PlayJsonImplicits
