@@ -84,7 +84,7 @@ package skithub {
         val secs = TimeUnit.MILLISECONDS toSeconds l - (TimeUnit.HOURS toMillis hrs) - (TimeUnit.MINUTES toMillis mins)
         val ms   = TimeUnit.MILLISECONDS toMillis  l - (TimeUnit.HOURS toMillis hrs) - (TimeUnit.MINUTES toMillis mins) - (TimeUnit.SECONDS toMillis secs)
 
-        f"$hrs%02d:$mins%02d:$secs%02d.$ms%03d"
+        f"$hrs%02dh$mins%02dm$secs%02ds$ms%03d"
       }
     }
 
