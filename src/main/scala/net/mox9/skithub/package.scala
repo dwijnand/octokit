@@ -96,6 +96,11 @@ package skithub {
       @inline def await30s: T                = f await 30.seconds
     }
 
+    @inline implicit class FutureTravOnceW[T, M[X] <: TravOnce[X]](private val f: Future[M[T]]) {
+      @inline def foldMap[U >: T](z: U)(op: (U, T) => U)(implicit ec: ExecCtx): Future[U] = foldLeftMap(z)(op)
+      @inline def foldLeftMap[U] (z: U)(op: (U, T) => U)(implicit ec: ExecCtx): Future[U] = f map (_.foldLeft(z)(op))
+    }
+
     @inline implicit class TravOnceW[T, M[X] <: TravOnce[X]](private val xs: M[T]) {
       @inline def traverse[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx): Future[M[U]] =
         Future.traverse(xs)(f)
