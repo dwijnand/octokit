@@ -24,8 +24,8 @@ trait PlayJsonImplicits {
   @inline val Reads             = play.api.libs.json.Reads
   @inline val Writes            = play.api.libs.json.Writes
 
-  def jsSuccess[T](x: T): JsResult[T] = JsSuccess(x)
-  def jsError(errors: Seq[(JsPath, Seq[ValidationError])]): JsResult[Nothing] = JsError(errors)
+  @inline def jsSuccess[T](x: T): JsResult[T] = JsSuccess(x)
+  @inline def jsError(errors: Seq[(JsPath, Seq[ValidationError])]): JsResult[Nothing] = JsError(errors)
 
   @inline implicit class Any2PlayJsonW[T](private val x: T) {
     @inline def toJson(implicit W: Writes[T]): JsValue    = Json toJson x
