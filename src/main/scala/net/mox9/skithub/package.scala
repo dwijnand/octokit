@@ -257,9 +257,9 @@ package skithub {
     }
 
     @inline implicit class TravOnceWithMonoidFutureOps[T, M[X] <: TravOnce[X]](private val xs: M[T]) {
-      def parFoldMap[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx, M: Monoid[U]): Future[U] =
-        xs traverse f map (_ foldZ M)
-      def seqFoldMap[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx, M: Monoid[U]): Future[U] =
+      def parFoldMap[U: Monoid](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx): Future[U] =
+        xs traverse f map (_.foldZ)
+      def seqFoldMap[U: Monoid](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx): Future[U] =
         (xs map f).foldZ
     }
   }
