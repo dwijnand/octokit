@@ -26,6 +26,7 @@ triggeredMessage := Watched.clearWhenTriggered
   wartremoverWarnings += Wart.Any2StringAdd
   wartremoverWarnings += Wart.AsInstanceOf
   wartremoverWarnings += Wart.EitherProjectionPartial
+//wartremoverWarnings += Wart.FinalCaseClass          // False positive on AnyVal: #174
   wartremoverWarnings += Wart.IsInstanceOf
   wartremoverWarnings += Wart.ListOps
   wartremoverWarnings += Wart.JavaConversions
