@@ -4,6 +4,8 @@ import scala.language.higherKinds
 import scala.language.implicitConversions
 
 import play.api.data.validation.ValidationError
+import play.api.libs.functional._
+import play.api.libs.functional.syntax._
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.{ JsArray, JsNull, JsObject, JsPath, JsValue }
 
@@ -19,9 +21,10 @@ import java.util.concurrent.TimeUnit
 // TODO: Switch to WSClient
 // TODO: Handle HTTP codes. Abstraction?
 package object skithub
-  extends    ScalaImplicits
-     with PlayJsonImplicits
-     with   PlayWsImplicits
+  extends          ScalaImplicits
+  with PlayFunctionalImplicits
+  with       PlayJsonImplicits
+  with         PlayWsImplicits
 
 package skithub {
   trait ScalaImplicits {
@@ -224,6 +227,40 @@ package skithub {
     @inline implicit class MultimapWithTabular[K, V](private val xs: Trav[K -> Trav[V]]) {
       @inline def tabularKVs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
       @inline def showKVs()  = tabularKVs foreach println
+    }
+  }
+
+  trait PlayFunctionalImplicits {
+    @inline implicit def seqMonoid[A] = new Monoid[Seq[A]] {
+      def identity: Seq[A] = Nil
+      def append(a1: Seq[A], a2: Seq[A]): Seq[A] = a1 ++ a2
+    }
+
+    @inline implicit def jsResultMonoid[T](implicit M: Monoid[T]) = new Monoid[JsResult[T]] {
+      def append(res1: JsResult[T], res2: JsResult[T]): JsResult[T] = {
+        (res1, res2) match {
+          case (JsSuccess(a, _), JsSuccess(b, _)) => JsSuccess(a |+| b)
+          case (JsError(e1), JsError(e2))         => JsError(JsError.merge(e1, e2))
+          case (JsError(e), _)                    => JsError(e)
+          case (_, JsError(e))                    => JsError(e)
+        }
+      }
+      def identity: JsResult[T] = JsSuccess(M.identity)
+    }
+
+    @inline implicit class TravOnceWithMonoid[T, M[X] <: TravOnce[X]](val xs: M[T]) {
+      def foldZ(implicit M: Monoid[T]): T = xs.foldLeft(M.identity)(M.append)
+    }
+
+    @inline implicit class TravOnceFutureWithMonoid[T, M[X] <: TravOnce[X]](private val fs: M[Future[T]]) {
+      def foldZ(implicit ec: ExecCtx, M: Monoid[T]): Future[T] = Future.fold(fs)(M.identity)(M.append)
+    }
+
+    @inline implicit class TravOnceWithMonoidFutureOps[T, M[X] <: TravOnce[X]](private val xs: M[T]) {
+      def parFoldMap[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx, M: Monoid[U]): Future[U] =
+        xs traverse f map (_ foldZ M)
+      def seqFoldMap[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx, M: Monoid[U]): Future[U] =
+        (xs map f).foldZ
     }
   }
 
