@@ -78,12 +78,13 @@ package skithub {
 
     @inline implicit class DurationW(private val d: Duration) {
       def toHHmmssSSS = {
+        import TimeUnit._
         val l = d.toMillis
 
-        val hrs  = TimeUnit.MILLISECONDS toHours   l
-        val mins = TimeUnit.MILLISECONDS toMinutes l - (TimeUnit.HOURS toMillis hrs)
-        val secs = TimeUnit.MILLISECONDS toSeconds l - (TimeUnit.HOURS toMillis hrs) - (TimeUnit.MINUTES toMillis mins)
-        val ms   = TimeUnit.MILLISECONDS toMillis  l - (TimeUnit.HOURS toMillis hrs) - (TimeUnit.MINUTES toMillis mins) - (TimeUnit.SECONDS toMillis secs)
+        val hrs  = MILLISECONDS toHours   l
+        val mins = MILLISECONDS toMinutes l - (HOURS toMillis hrs)
+        val secs = MILLISECONDS toSeconds l - (HOURS toMillis hrs) - (MINUTES toMillis mins)
+        val ms   = MILLISECONDS toMillis  l - (HOURS toMillis hrs) - (MINUTES toMillis mins) - (SECONDS toMillis secs)
 
         f"$hrs%02dh$mins%02dm$secs%02ds$ms%03d"
       }
