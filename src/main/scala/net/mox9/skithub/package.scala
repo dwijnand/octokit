@@ -97,15 +97,15 @@ package skithub {
     }
 
     @inline implicit class TravOnceW[T, M[X] <: TravOnce[X]](private val xs: M[T]) {
-      def traverse[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx): Future[M[U]] =
+      @inline def traverse[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx): Future[M[U]] =
         Future.traverse(xs)(f)
     }
 
     @inline implicit class TravOneFutureW[T, M[X] <: TravOnce[X]](private val fs: M[Future[T]]) {
-      def sequence(implicit cbf: CBF[M[Future[T]], T, M[T]], ec: ExecCtx): Future[M[T]]      = Future sequence fs
-      def firstCompletedOf                         (implicit ec: ExecCtx): Future[T]         = Future firstCompletedOf fs
-      def find(p: T => Boolean)                    (implicit ec: ExecCtx): Future[Option[T]] = Future.find(fs)(p)
-      def fold[R](z: R)(op: (R, T) => R)           (implicit ec: ExecCtx): Future[R]         = Future.fold(fs)(z)(op)
+      @inline def sequence(implicit cbf: CBF[M[Future[T]], T, M[T]], ec: ExecCtx): Future[M[T]]      = Future sequence fs
+      @inline def firstCompletedOf                         (implicit ec: ExecCtx): Future[T]         = Future firstCompletedOf fs
+      @inline def findFut(p: T => Boolean)                 (implicit ec: ExecCtx): Future[Option[T]] = Future.find(fs)(p)
+      @inline def foldFut[R](z: R)(op: (R, T) => R)        (implicit ec: ExecCtx): Future[R]         = Future.fold(fs)(z)(op)
     }
 
     @inline implicit class IntWithAlign(private val x: Int) {
