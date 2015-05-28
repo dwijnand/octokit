@@ -10,4 +10,5 @@ package net.mox9
 // TODO: Switch to WSClient
 // TODO: Handle HTTP codes. Abstraction?
 package object skithub extends ScalaImplicits
+  with TabularImplicits
   with PlayFunctionalImplicits with PlayJsonImplicits with PlayWsImplicits
