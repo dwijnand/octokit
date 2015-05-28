@@ -55,9 +55,15 @@ package skithub {
     val ISO_8601_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     val UTC_TZ = java.util.TimeZone getTimeZone "UTC"
 
-    @inline def idFun[T] = (t: T) => t
+    @inline def idFun[T]: T => T           = t => t
     @inline def const[T, U](x: T)(y: U): T = x
+
     @inline def nanoTime(): Long = java.lang.System.nanoTime
+
+    @inline def classTag[T: CTag]: CTag[T]      = implicitly[CTag[T]]
+ // @inline def classOf[T: CTag]: Class[_ <: T] = classTag[T].runtimeClass.asInstanceOf[Class[_ <: T]]
+
+    @inline def breakOut[From, T, To](implicit cbf: CBF[Nothing, T, To]) = scala.collection.breakOut[From, T, To]
 
     def nowIso8601() =
       new java.text.SimpleDateFormat(ISO_8601_FMT) doto (_ setTimeZone UTC_TZ) format new java.util.Date()
@@ -74,6 +80,7 @@ package skithub {
     @inline implicit class AnyW[T](private val x: T) {
       @inline def toUnit(): Unit = ()
 
+      @inline def |>[U](f: T => U): U    = f(x)
       @inline def pipe[U](f: T => U): U  = f(x)
       @inline def sideEffect(u: Unit): T = x
       @inline def doto(f: T => Unit): T  = sideEffect(f(x))
@@ -83,8 +90,56 @@ package skithub {
       @inline def requiring(p: T => Boolean): Option[T] = if (p(x)) Some(x) else None
       @inline def isOr(p: T => Boolean)(alt: => T): T   = if (p(x)) x else alt
 
-      @inline def maybe[U](pf: T ?=> U): Option[U]      = pf lift x
-      @inline def matchOr[U](alt: => U)(pf: T ?=> U): U = pf.applyOrElse(x, const(alt))
+      @inline def maybe[U](pf: T ?=> U): Option[U]             = pf lift x
+      @inline def matchOr[U](alt: => U)(pf: T ?=> U): U        = pf.applyOrElse(x, const(alt))
+      @inline def flatMaybe[U](pf: T ?=> Option[U]): Option[U] = pf lift x flatten
+      @inline def maybeUnit(pf: T ?=> Unit): Unit              = pf lift x getOrElse(())
+
+   // @inline def isClass[B: CTag]              = classOf[B] isAssignableFrom x.getClass
+   // @inline def castToOpt[B: CTag]: Option[B] = if (x.isClass[B]) Some(x.asInstanceOf[B]) else None
+
+      @inline def some : Option[T] = Some(x)
+      @inline def opt  : Option[T] = Option(x)
+
+      @inline def left[B]  : T \/ B = Left(x)
+      @inline def right[A] : A \/ T = Right(x)
+
+      @inline def future: Future[T] = Future successful x
+    }
+    @inline def none[T]: Option[T] = None
+    @inline def nil[T]: Seq[T] = Nil
+
+    @inline implicit class ThrowableW[T <: Throwable](private val t: T) {
+      @inline def failFut[U]: Future[U] = Future failed t
+    }
+
+    @inline implicit class IntW(private val i: Int) {
+      @inline def bd: BigDecimal = BigDecimal(i)
+
+      /** Integer division, rounding up */
+      @inline def divUp(j: Int) = (i + j - 1) / j
+    }
+
+    @inline implicit class LongW(private val l: Long) {
+      @inline def bd: BigDecimal = BigDecimal(l)
+    }
+
+    @inline implicit class StringW(private val s: String) {
+      @inline def bd: BigDecimal = BigDecimal(s)
+    }
+
+    @inline implicit class BigDecimalW(private val bd: BigDecimal) {
+      @inline def divOpt(i: Int): Option[BigDecimal] = if (i == 0) None else Some(bd / i)
+      @inline def /?    (i: Int): Option[BigDecimal] = bd divOpt i
+    }
+
+    @inline implicit class TryW[T](private val x: Try[T]) {
+      @inline def fold[U](s: T => U, f: Throwable => U): U =
+        x match {
+          case Success(v) => s(v)
+          case Failure(e) => f(e)
+        }
+      @inline def valueOr[B >: T](f: Throwable => B): B = fold(identity, f)
     }
 
     @inline implicit class DurationW(private val d: Duration) {
