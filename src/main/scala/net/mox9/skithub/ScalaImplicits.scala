@@ -75,8 +75,8 @@ trait ScalaImplicits {
 
     @inline def maybe[U](pf: T ?=> U): Option[U]             = pf lift x
     @inline def matchOr[U](alt: => U)(pf: T ?=> U): U        = pf.applyOrElse(x, const(alt))
-    @inline def flatMaybe[U](pf: T ?=> Option[U]): Option[U] = pf lift x flatten
-    @inline def maybeUnit(pf: T ?=> Unit): Unit              = pf lift x getOrElse(())
+    @inline def flatMaybe[U](pf: T ?=> Option[U]): Option[U] = x.matchOr(none[U])(pf)
+    @inline def maybeUnit(pf: T ?=> Unit): Unit              = x.matchOr(())(pf)
 
  // @inline def isClass[B: CTag]              = classOf[B] isAssignableFrom x.getClass
  // @inline def castToOpt[B: CTag]: Option[B] = if (x.isClass[B]) Some(x.asInstanceOf[B]) else None
