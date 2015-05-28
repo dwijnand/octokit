@@ -39,10 +39,7 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
           case jsError             => Future successful jsError
         }
       }
-      flatMap {
-        case JsSuccess(repos, _) => Future successful repos
-        case JsError(errors)     => Future failed JsResultException(errors)
-      }
+      flatten
     )
 
   private def getReposJson(org: String, pageNum: Int): Future[JsResult[Seq[Repo]]] =
