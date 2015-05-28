@@ -84,8 +84,8 @@ trait ScalaImplicits {
 
  // @inline def isClass[U: CTag]              = classOf[U] isAssignableFrom x.getClass
  // @inline def castToOpt[U: CTag]: Option[U] = if (x.isClass[U]) Some(x.asInstanceOf[U]) else None
-    @inline def toRef: Ref[T]                 = asInstanceOf[Ref[T]]
-    @inline def isNull: Boolean               = toRef eq null
+ // @inline def toRef: Ref[T]                 = asInstanceOf[Ref[T]]
+ // @inline def isNull: Boolean               = toRef eq null
 
  // @inline def reflect[B](m: java.lang.reflect.Method)(args: Any*): B =
  //   m.invoke(x, args.map(_.asInstanceOf[AnyRef]): _*).asInstanceOf[B]
