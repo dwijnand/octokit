@@ -25,21 +25,32 @@ package skithub {
   trait ScalaImplicits {
     @inline type ->[+A, +B]             = scala.Product2[A, B]
     @inline type ?=>[-A, +B]            = scala.PartialFunction[A, B]
+    @inline type \/[+A, +B]             = scala.Either[A, B]
+    @inline type \?/[+A, +B]            = scala.concurrent.Future[scala.Either[A, B]]
     @inline type CBF[-From, -Elem, +To] = scala.collection.generic.CanBuildFrom[From, Elem, To]
+    @inline type CTag[T]                = scala.reflect.ClassTag[T]
     @inline type Duration               = scala.concurrent.duration.Duration
     @inline type ExecCtx                = scala.concurrent.ExecutionContext
+    @inline type Failure[+T]            = scala.util.Failure[T]
     @inline type FiniteDuration         = scala.concurrent.duration.FiniteDuration
     @inline type Future[+T]             = scala.concurrent.Future[T]
-    @inline type Trav[+A]               = scala.collection.Traversable[A]
-    @inline type TravOnce[+A]           = scala.collection.TraversableOnce[A]
+    @inline type Success[+T]            = scala.util.Success[T]
+    @inline type tailrec                = scala.annotation.tailrec
+    @inline type Trav[+T]               = scala.collection.Traversable[T]
+    @inline type TravOnce[+T]           = scala.collection.TraversableOnce[T]
+    @inline type Try[+T]                = scala.util.Try[T]
 
-    @inline val ->               = scala.Product2
-    @inline val Duration         = scala.concurrent.duration.Duration
-    @inline val ExecCtx          = scala.concurrent.ExecutionContext
-    @inline val FiniteDuration   = scala.concurrent.duration.FiniteDuration
-    @inline val Future           = scala.concurrent.Future
-    @inline val Trav             = scala.collection.Traversable
-    @inline val TravOnce         = scala.collection.TraversableOnce
+    @inline val ->             = scala.Product2
+    @inline val Duration       = scala.concurrent.duration.Duration
+    @inline val ExecCtx        = scala.concurrent.ExecutionContext
+    @inline val Failure        = scala.util.Failure
+    @inline val FiniteDuration = scala.concurrent.duration.FiniteDuration
+    @inline val Future         = scala.concurrent.Future
+    @inline val HALF_UP        = scala.math.BigDecimal.RoundingMode.HALF_UP
+    @inline val Success        = scala.util.Success
+    @inline val Trav           = scala.collection.Traversable
+    @inline val TravOnce       = scala.collection.TraversableOnce
+    @inline val Try            = scala.util.Try
 
     val ISO_8601_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     val UTC_TZ = java.util.TimeZone getTimeZone "UTC"
