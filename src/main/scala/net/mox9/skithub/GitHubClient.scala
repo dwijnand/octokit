@@ -2,6 +2,7 @@ package net.mox9.skithub
 
 import play.api.Play.current
 //import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.functional.syntax._
 
 import scala.concurrent.ExecutionContext.Implicits._
 
@@ -27,16 +28,13 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
     (getReposResp(org, 1)
       flatMap { resp =>
         resp.json.validate[Seq[Repo]] match {
-          case JsSuccess(repos, _) =>
-            resp header "Link" flatMap getPageCount match {
-              case Some(pageCount) =>
-                ((2 to pageCount).toVector
-                  traverse (getReposJson(org, _))
-                  map (_ reduce ((res1, res2) => for (rs1 <- res1; rs2 <- res2) yield rs1 ++ rs2))
-                )
-              case None            => Future successful JsSuccess(repos)
+          case jsError: JsError => jsError.future
+          case reposJson        =>
+            val remainingReposJson = resp header "Link" flatMap getPageCount match {
+              case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(org, _))
+              case None            => Vector.empty.future
             }
-          case jsError             => Future successful jsError
+            remainingReposJson.foldMap(reposJson)(_ |+| _)
         }
       }
       flatten
