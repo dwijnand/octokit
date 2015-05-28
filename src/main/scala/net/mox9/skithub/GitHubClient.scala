@@ -24,14 +24,14 @@ final class GitHubClient(connectionConfig: ConnectionConfig) {
 
 final class OrgsClient(connectionConfig: ConnectionConfig) {
   def getRepos(org: String): Future[Seq[Repo]] =
-    (getRepos1(org, 1)
+    (getReposResp(org, 1)
       flatMap { resp =>
         resp.json.validate[Seq[Repo]] match {
           case JsSuccess(repos, _) =>
             resp header "Link" flatMap getPageCount match {
               case Some(pageCount) =>
                 ((2 to pageCount).toVector
-                  traverse (p => getRepos1(org, p) map (_.json.validate[Seq[Repo]]))
+                  traverse (getReposJson(org, _))
                   map (_ reduce ((res1, res2) => for (rs1 <- res1; rs2 <- res2) yield rs1 ++ rs2))
                 )
               case None            => Future successful JsSuccess(repos)
@@ -45,7 +45,10 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
       }
     )
 
-  private def getRepos1(org: String, pageNum: Int): Future[WSResponse] =
+  private def getReposJson(org: String, pageNum: Int): Future[JsResult[Seq[Repo]]] =
+    getReposResp(org, pageNum) map (_.json.validate[Seq[Repo]])
+
+  private def getReposResp(org: String, pageNum: Int): Future[WSResponse] =
     (WS
       url s"https://api.github.com/orgs/$org/repos"
       withQueryString      "page" -> s"$pageNum"
