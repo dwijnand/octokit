@@ -5,6 +5,7 @@ import scala.language.implicitConversions
 
 import java.util.concurrent.TimeUnit
 
+// TODO: Checkout more std package
 trait ScalaImplicits {
   @inline type ->[+A, +B]             = scala.Product2[A, B]
   @inline type ?=>[-A, +B]            = scala.PartialFunction[A, B]
@@ -17,6 +18,7 @@ trait ScalaImplicits {
   @inline type Failure[+T]            = scala.util.Failure[T]
   @inline type FiniteDuration         = scala.concurrent.duration.FiniteDuration
   @inline type Future[+T]             = scala.concurrent.Future[T]
+  @inline type Ref[+A]                = A with scala.AnyRef
   @inline type Success[+T]            = scala.util.Success[T]
   @inline type tailrec                = scala.annotation.tailrec
   @inline type Trav[+T]               = scala.collection.Traversable[T]
@@ -45,6 +47,8 @@ trait ScalaImplicits {
 
   @inline def classTag[T: CTag]: CTag[T]      = implicitly[CTag[T]]
 //@inline def classOf[T: CTag]: Class[_ <: T] = classTag[T].runtimeClass.asInstanceOf[Class[_ <: T]]
+
+  @inline def partial[T, U](pf: T ?=> U): T ?=> U = pf
 
   @inline def breakOut[From, T, To](implicit cbf: CBF[Nothing, T, To]) = scala.collection.breakOut[From, T, To]
 
@@ -78,8 +82,13 @@ trait ScalaImplicits {
     @inline def flatMaybe[U](pf: T ?=> Option[U]): Option[U] = x.matchOr(none[U])(pf)
     @inline def maybeUnit(pf: T ?=> Unit): Unit              = x.matchOr(())(pf)
 
- // @inline def isClass[B: CTag]              = classOf[B] isAssignableFrom x.getClass
- // @inline def castToOpt[B: CTag]: Option[B] = if (x.isClass[B]) Some(x.asInstanceOf[B]) else None
+ // @inline def isClass[U: CTag]              = classOf[U] isAssignableFrom x.getClass
+ // @inline def castToOpt[U: CTag]: Option[U] = if (x.isClass[U]) Some(x.asInstanceOf[U]) else None
+    @inline def toRef: Ref[T]                 = asInstanceOf[Ref[T]]
+    @inline def isNull: Boolean               = toRef eq null
+
+ // @inline def reflect[B](m: java.lang.reflect.Method)(args: Any*): B =
+ //   m.invoke(x, args.map(_.asInstanceOf[AnyRef]): _*).asInstanceOf[B]
 
     @inline def some : Option[T] = Some(x)
     @inline def opt  : Option[T] = Option(x)
@@ -89,6 +98,7 @@ trait ScalaImplicits {
 
     @inline def future: Future[T] = Future successful x
   }
+
   @inline def none[T]: Option[T] = None
   @inline def nil[T]: Seq[T] = Nil
 
