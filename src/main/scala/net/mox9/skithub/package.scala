@@ -198,7 +198,7 @@ package skithub {
       case _                  => h.substring(0, 1)
     }
 
-    @inline implicit class TravProdWithTabular[T <: Product](private val xs: Trav[T]) {
+    @inline implicit class ProductsWithTabular(private val xs: Trav[Product]) {
       @inline def tabularps = {
         xs.headOption match {
           case None    => Nil
