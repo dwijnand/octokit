@@ -69,6 +69,7 @@ object Repo {
   implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
 }
 
+// TODO: Revert this back to Option[String], sort pprinting elsewhere & output None as "-"
 sealed trait Lang extends Any { def value: String ; final override def toString = value }
 
 object Lang extends (String => Lang) {
