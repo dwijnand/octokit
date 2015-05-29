@@ -1,29 +1,51 @@
 package net.mox9.octokit
 
+import play.api._
+
 object T {
   val userAgent = UserAgent("dwijnand")
 
   val accessToken =
     sys.env get "GITHUB_API_TOKEN" map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
 
+  val appEnv = Environment simple (mode = Mode.Dev)
+  val appLoadingCtx = ApplicationLoader createContext appEnv
+
+  class MyComponents(context: ApplicationLoader.Context)
+    extends BuiltInComponentsFromContext(context)
+       with play.api.libs.ws.ning.NingWSComponents
+  {
+    lazy val router = routing.Router.empty
+  }
+
+/*
+  class MyApplicationLoader extends ApplicationLoader {
+    def load(context: ApplicationLoader.Context) = {
+      new MyComponents(context).application
+    }
+  }
+
+  val appLoader = new MyApplicationLoader
+
+  private val unstartedApp = appLoader load appLoadingCtx
+*/
+
+  val components = new MyComponents(appLoadingCtx)
+  import components._
+
   val connectionConfig = ConnectionConfig(userAgent, accessToken)
 
-  private def newUnstartedApp() =
-    new play.api.DefaultApplication(
-      new java.io.File("."), this.getClass.getClassLoader, None, play.api.Mode.Dev)
+  val github = new GitHubClient(wsClient, connectionConfig)
 
-  def newApp() = newUnstartedApp() doto play.api.Play.start
-
-  def stop()  = play.api.Play.stop()
-
-  def newGithub(implicit app: play.api.Application) = new GitHubClient(WS.client, connectionConfig)
-
-  def github() = newGithub(newApp())
+  def stop(): Unit =
+    try
+      applicationLifecycle.stop() await Duration.Inf
+    catch {
+      case NonFatal(e) => Logger(T.getClass).warn("Error stopping.", e)
+    }
 
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
-
-    val github = T.github()
 
     try {
       val repos -> elapsed = timed {

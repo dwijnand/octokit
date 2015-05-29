@@ -76,7 +76,7 @@ object Lang extends (String => Lang) {
 
   implicit val jsFormat: JsonFormat[Lang] =
     JsonFormat(
-      Reads.of[Option[String]] map { case None => NoLang ; case Some(s) => Lang(s) },
+      Reads.optionNoError[String] map { case None => NoLang ; case Some(s) => Lang(s) },
       Writes(_.value.toJson)
     )
 }

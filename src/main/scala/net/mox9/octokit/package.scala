@@ -1,7 +1,6 @@
 package net.mox9
 
 // TODO: Tabulate class
-// TODO: Migrate to Play 2.4
 // TODO: Explore github.orgs("org-name").repos  .get?
 // TODO: Make aliases final?
 // TODO: Handle HTTP codes. Abstraction?

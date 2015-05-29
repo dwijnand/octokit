@@ -52,7 +52,8 @@ trait PlayJsonImplicits {
   }
 
   @inline implicit class JsErrorW[T](private val e: JsError) {
-    @inline def toFlatJson: JsObject = JsError toFlatJson e
+    // TODO: Remove to toJson?
+    @inline def toFlatJson: JsObject = JsError toJson e
   }
 
   @inline implicit class FutureJsResultW[T](private val f: Future[JsResult[T]]) {
