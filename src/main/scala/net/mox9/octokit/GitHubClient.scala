@@ -1,6 +1,5 @@
 package net.mox9.octokit
 
-import play.api.Play.current
 //import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.functional.syntax._
 
@@ -19,11 +18,11 @@ case class AccessToken(value: String) extends AnyVal with Credentials {
 // TODO: Use Credentials
 final case class ConnectionConfig(userAgent: UserAgent, accessToken: AccessToken)
 
-final class GitHubClient(connectionConfig: ConnectionConfig) {
-  val orgs = new OrgsClient(connectionConfig)
+final class GitHubClient(wsClient: WSClient, connectionConfig: ConnectionConfig) {
+  val orgs = new OrgsClient(wsClient, connectionConfig)
 }
 
-final class OrgsClient(connectionConfig: ConnectionConfig) {
+final class OrgsClient(wsClient: WSClient, connectionConfig: ConnectionConfig) {
   def getRepos(org: String): Future[Seq[Repo]] =
     (getReposResp(org, 1)
       flatMap { resp =>
@@ -44,7 +43,7 @@ final class OrgsClient(connectionConfig: ConnectionConfig) {
     getReposResp(org, pageNum) map (_.json.validate[Seq[Repo]])
 
   private def getReposResp(org: String, pageNum: Int): Future[WSResponse] =
-    (WS
+    (wsClient
       url s"https://api.github.com/orgs/$org/repos"
       withQueryString      "page" -> s"$pageNum"
       withHeaders    "User-Agent" -> s"${connectionConfig.userAgent}"

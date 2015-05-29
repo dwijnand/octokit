@@ -8,12 +8,22 @@ object T {
 
   val connectionConfig = ConnectionConfig(userAgent, accessToken)
 
-  val github = new GitHubClient(connectionConfig)
+  private def newUnstartedApp() =
+    new play.api.DefaultApplication(
+      new java.io.File("."), this.getClass.getClassLoader, None, play.api.Mode.Dev)
+
+  def newApp() = newUnstartedApp() doto play.api.Play.start
+
+  def stop()  = play.api.Play.stop()
+
+  def newGithub(implicit app: play.api.Application) = new GitHubClient(WS.client, connectionConfig)
+
+  def github() = newGithub(newApp())
 
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
-    start()
+    val github = T.github()
 
     try {
       val repos -> elapsed = timed {
@@ -24,9 +34,4 @@ object T {
       s"Took: ${elapsed.toHHmmssSSS}".>>
     } finally stop()
   }
-
-  def newApp = new play.api.DefaultApplication(new java.io.File("."), this.getClass.getClassLoader, None, play.api.Mode.Dev)
-
-  def start() = play.api.Play start newApp
-  def stop()  = play.api.Play.stop()
 }
