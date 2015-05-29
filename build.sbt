@@ -1,7 +1,7 @@
 import pre.SbtKit._
 
-organization := "net.mox9.skithub"
-        name := "skithub"
+organization := "net.mox9.octokit"
+        name := "octokit"
      version := "1.0-SNAPSHOT"
 
       scalaVersion := "2.11.6"

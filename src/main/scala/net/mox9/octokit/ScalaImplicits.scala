@@ -1,4 +1,4 @@
-package net.mox9.skithub
+package net.mox9.octokit
 
 import scala.language.higherKinds
 import scala.language.implicitConversions

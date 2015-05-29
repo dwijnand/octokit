@@ -1,4 +1,4 @@
-package net.mox9.skithub
+package net.mox9.octokit
 
 import play.api.Play.current
 //import play.api.libs.concurrent.Execution.Implicits._
