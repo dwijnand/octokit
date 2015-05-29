@@ -37,11 +37,11 @@ trait PlayJsonImplicits {
   }
 
   @inline implicit class String2PlayJsonW(private val s: String) {
-    @inline def jsonParse: JsValue = Json parse s
+    @inline def jsonParseForce: JsValue = Json parse s
   }
 
   @inline implicit class ByteArray2PlayJsonW(private val bs: Array[Byte]) {
-    @inline def jsonParse: JsValue = Json parse bs
+    @inline def jsonParseForce: JsValue = Json parse bs
   }
 
   @inline implicit class JsValueW(private val json: JsValue) {
