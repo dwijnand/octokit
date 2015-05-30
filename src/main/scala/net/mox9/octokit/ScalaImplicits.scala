@@ -32,6 +32,7 @@ trait ScalaImplicits {
   @inline val FiniteDuration = scala.concurrent.duration.FiniteDuration
   @inline val Future         = scala.concurrent.Future
   @inline val HALF_UP        = scala.math.BigDecimal.RoundingMode.HALF_UP
+  @inline val NonFatal       = scala.util.control.NonFatal
   @inline val Success        = scala.util.Success
   @inline val Trav           = scala.collection.Traversable
   @inline val TravOnce       = scala.collection.TraversableOnce
