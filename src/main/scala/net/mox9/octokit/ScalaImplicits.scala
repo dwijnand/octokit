@@ -99,6 +99,9 @@ trait ScalaImplicits {
     @inline def left[B]  : T \/ B = Left(x)
     @inline def right[A] : A \/ T = Right(x)
 
+    @inline def list : List[T]   = List(x)
+    @inline def vec  : Vector[T] = Vector(x)
+
     @inline def future: Future[T] = Future successful x
   }
 
