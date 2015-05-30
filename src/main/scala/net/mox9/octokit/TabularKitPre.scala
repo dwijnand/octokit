@@ -12,7 +12,7 @@ trait TabularKitPre {
   }
 
   @inline implicit final class ProductsWithTabular(private val xs: Trav[Product]) {
-    @inline def tabularps = {
+    @inline def tabularPs = {
       xs.headOption match {
         case None    => Nil
         case Some(h) =>
@@ -28,7 +28,7 @@ trait TabularKitPre {
           (headers +: rows) map (row => rowFormat.format(row.seq: _*))
       }
     }
-    @inline def showps()  = tabularps foreach println
+    @inline def showPs()  = tabularPs foreach println
   }
 
   @inline implicit final class MapWithTabular[K, V](private val xs: Trav[K -> V]) {
