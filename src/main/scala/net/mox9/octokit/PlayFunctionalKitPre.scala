@@ -6,7 +6,7 @@ import scala.language.implicitConversions
 import play.api.libs.functional._
 import play.api.libs.functional.syntax._
 
-trait PlayFunctionalImplicits {
+trait PlayFunctionalKitPre {
   @inline implicit def seqMonoid[A] = new Monoid[Seq[A]] {
     def identity: Seq[A]                       = Nil
     def append(a1: Seq[A], a2: Seq[A]): Seq[A] = a1 ++ a2

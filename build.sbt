@@ -1,4 +1,4 @@
-import pre.SbtKit._
+import SbtKitPre._
 
 organization := "net.mox9.octokit"
         name := "octokit"

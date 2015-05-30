@@ -1,5 +1,5 @@
 package net.mox9.octokit
 
-trait AkkaImplicits {
+trait AkkaKitPre {
   type ActorSystem = akka.actor.ActorSystem
 }

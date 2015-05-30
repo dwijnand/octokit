@@ -3,7 +3,7 @@ package net.mox9.octokit
 import scala.language.higherKinds
 import scala.language.implicitConversions
 
-trait TabularImplicits {
+trait TabularKitPre {
   private def trimHeader(h: String): Int => String = {
     case i if i >= h.length => h
     case i if i > 5         => h.substring(0, i - 2) + ".."

@@ -6,7 +6,7 @@ import scala.language.implicitConversions
 import java.util.concurrent.TimeUnit
 
 // TODO: Checkout more std package
-trait ScalaImplicits {
+trait ScalaKitPre {
   @inline type ->[+A, +B]             = scala.Product2[A, B]
   @inline type ?=>[-A, +B]            = scala.PartialFunction[A, B]
   @inline type \/[+A, +B]             = scala.Either[A, B]

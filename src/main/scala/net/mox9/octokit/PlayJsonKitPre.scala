@@ -7,7 +7,7 @@ import play.api.data.validation.ValidationError
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.{ JsArray, JsNull, JsObject, JsPath, JsValue }
 
-trait PlayJsonImplicits {
+trait PlayJsonKitPre {
   @inline type JsError           = play.api.libs.json.JsError
   @inline type JsResultException = play.api.libs.json.JsResultException
   @inline type JsResult[+T]      = play.api.libs.json.JsResult[T]

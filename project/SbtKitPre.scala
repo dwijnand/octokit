@@ -1,8 +1,6 @@
-package pre
-
 import sbt._, Keys._
 
-object SbtKit {
+object SbtKitPre {
   def scalaPartV = Def setting (CrossVersion partialVersion scalaVersion.value)
 
   implicit final class AnyWithIfScala11Plus[A](val _o: A) {

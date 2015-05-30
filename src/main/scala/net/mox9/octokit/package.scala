@@ -4,8 +4,7 @@ package net.mox9
 // TODO: Explore github.orgs("org-name").repos  .get?
 // TODO: Make aliases final?
 // TODO: Handle HTTP codes. Abstraction?
-// TODO: Rename XImplicits to XKitPre, including SbtKitPre
-package object octokit extends ScalaImplicits
-  with TabularImplicits
-  with AkkaImplicits
-  with PlayFunctionalImplicits with PlayJsonImplicits with PlayWsImplicits
+package object octokit extends ScalaKitPre
+  with TabularKitPre
+  with AkkaKitPre
+  with PlayFunctionalKitPre with PlayJsonKitPre with PlayWsKitPre
