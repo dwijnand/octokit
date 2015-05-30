@@ -4,7 +4,7 @@ object T {
   val userAgent = UserAgent("dwijnand")
 
   val accessToken =
-    sys.env get "GITHUB_API_TOKEN"  map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
+    sys.env get "GITHUB_API_TOKEN" map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
 
   val connectionConfig = ConnectionConfig(userAgent, accessToken)
 

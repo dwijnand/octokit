@@ -74,7 +74,11 @@ sealed trait Lang extends Any { def value: String ; final override def toString 
 object Lang extends (String => Lang) {
   def apply(s: String): Lang = s.trim pipe (s => if (s.isEmpty) NoLang else LangImpl(s))
 
-  implicit val jsFormat: JsonFormat[Lang] = JsonFormat(Reads.of[Option[String]] map { case None => NoLang ; case Some(s) => Lang(s) }, Writes(_.value.toJson))
+  implicit val jsFormat: JsonFormat[Lang] =
+    JsonFormat(
+      Reads.of[Option[String]] map { case None => NoLang ; case Some(s) => Lang(s) },
+      Writes(_.value.toJson)
+    )
 }
 
 case object NoLang extends Lang { val value = "" }
