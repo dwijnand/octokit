@@ -18,11 +18,11 @@ case class AccessToken(value: String) extends AnyVal with Credentials {
 // TODO: Use Credentials
 final case class ConnectionConfig(userAgent: UserAgent, accessToken: AccessToken)
 
-final class GitHubClient(wsClient: WSClient, connectionConfig: ConnectionConfig) {
-  val orgs = new OrgsClient(wsClient, connectionConfig)
+final class GitHubClient(ws: WSClient, connectionConfig: ConnectionConfig) {
+  val orgs = new OrgsClient(ws, connectionConfig)
 }
 
-final class OrgsClient(wsClient: WSClient, connectionConfig: ConnectionConfig) {
+final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig) {
   def getRepos(org: String): Future[Seq[Repo]] =
     (getReposResp(org, 1)
       flatMap { resp =>
@@ -43,7 +43,7 @@ final class OrgsClient(wsClient: WSClient, connectionConfig: ConnectionConfig) {
     getReposResp(org, pageNum) map (_.json.validate[Seq[Repo]])
 
   private def getReposResp(org: String, pageNum: Int): Future[WSResponse] =
-    (wsClient
+    (ws
       url s"https://api.github.com/orgs/$org/repos"
       withQueryString      "page" -> s"$pageNum"
       withHeaders    "User-Agent" -> s"${connectionConfig.userAgent}"
