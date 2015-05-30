@@ -2,7 +2,7 @@ package net.mox9.octokit
 
 import play.api._
 
-object T {
+object Main {
   val userAgent = UserAgent("dwijnand")
 
   val accessToken =
@@ -16,7 +16,7 @@ object T {
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
-    val t = new T; import t._
+    val t = new Main; import t._
 
     try {
       val repos -> elapsed = timed {
@@ -29,11 +29,11 @@ object T {
   }
 }
 
-class T
-  extends BuiltInComponentsFromContext(T.appLoadingCtx)
+class Main
+  extends BuiltInComponentsFromContext(Main.appLoadingCtx)
      with play.api.libs.ws.ning.NingWSComponents
 {
-  import T._
+  import Main._
 
   val router = routing.Router.empty
   val github = new GitHubClient(wsClient, connectionConfig)
@@ -42,6 +42,6 @@ class T
     try
       applicationLifecycle.stop() await Duration.Inf
     catch {
-      case NonFatal(e) => Logger(T.getClass).warn("Error stopping.", e)
+      case NonFatal(e) => Logger(Main.getClass).warn("Error stopping.", e)
     }
 }
