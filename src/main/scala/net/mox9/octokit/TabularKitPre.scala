@@ -38,6 +38,7 @@ trait TabularKitPre {
   }
 
   @inline implicit final class MultimapWithTabular[K, V](private val xs: Trav[K -> Trav[V]]) {
+    // TODO: alias xs.mkString("[", "],[", "]")
     @inline def tabularKVs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
     @inline def showKVs()  = tabularKVs foreach println
   }
