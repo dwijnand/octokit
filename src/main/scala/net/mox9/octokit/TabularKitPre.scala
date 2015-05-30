@@ -11,7 +11,7 @@ trait TabularKitPre {
     case _                  => h.substring(0, 1)
   }
 
-  @inline implicit class ProductsWithTabular(private val xs: Trav[Product]) {
+  @inline implicit final class ProductsWithTabular(private val xs: Trav[Product]) {
     @inline def tabularps = {
       xs.headOption match {
         case None    => Nil
@@ -31,13 +31,13 @@ trait TabularKitPre {
     @inline def showps()  = tabularps foreach println
   }
 
-  @inline implicit class MapWithTabular[K, V](private val xs: Trav[K -> V]) {
+  @inline implicit final class MapWithTabular[K, V](private val xs: Trav[K -> V]) {
     @inline def maxKeyLen = xs.toIterator.map(_._1.toString.length).max
     @inline def tabularKV = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
     @inline def showKV()  = tabularKV foreach println
   }
 
-  @inline implicit class MultimapWithTabular[K, V](private val xs: Trav[K -> Trav[V]]) {
+  @inline implicit final class MultimapWithTabular[K, V](private val xs: Trav[K -> Trav[V]]) {
     @inline def tabularKVs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
     @inline def showKVs()  = tabularKVs foreach println
   }

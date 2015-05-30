@@ -1,5 +1,5 @@
 package net.mox9.octokit
 
 trait AkkaKitPre {
-  type ActorSystem = akka.actor.ActorSystem
+  @inline final type ActorSystem = akka.actor.ActorSystem
 }

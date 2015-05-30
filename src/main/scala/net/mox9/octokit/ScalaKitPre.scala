@@ -7,65 +7,66 @@ import java.util.concurrent.TimeUnit
 
 // TODO: Checkout more std package
 trait ScalaKitPre {
-  @inline type ->[+A, +B]             = scala.Product2[A, B]
-  @inline type ?=>[-A, +B]            = scala.PartialFunction[A, B]
-  @inline type \/[+A, +B]             = scala.Either[A, B]
-  @inline type \?/[+A, +B]            = scala.concurrent.Future[scala.Either[A, B]]
-  @inline type CBF[-From, -Elem, +To] = scala.collection.generic.CanBuildFrom[From, Elem, To]
-  @inline type CTag[T]                = scala.reflect.ClassTag[T]
-  @inline type Duration               = scala.concurrent.duration.Duration
-  @inline type ExecCtx                = scala.concurrent.ExecutionContext
-  @inline type Failure[+T]            = scala.util.Failure[T]
-  @inline type FiniteDuration         = scala.concurrent.duration.FiniteDuration
-  @inline type Future[+T]             = scala.concurrent.Future[T]
-  @inline type Ref[+A]                = A with scala.AnyRef
-  @inline type Success[+T]            = scala.util.Success[T]
-  @inline type tailrec                = scala.annotation.tailrec
-  @inline type Trav[+T]               = scala.collection.Traversable[T]
-  @inline type TravOnce[+T]           = scala.collection.TraversableOnce[T]
-  @inline type Try[+T]                = scala.util.Try[T]
+  @inline final type ->[+A, +B]             = scala.Product2[A, B]
+  @inline final type ?=>[-A, +B]            = scala.PartialFunction[A, B]
+  @inline final type \/[+A, +B]             = scala.Either[A, B]
+  @inline final type \?/[+A, +B]            = scala.concurrent.Future[scala.Either[A, B]]
+  @inline final type CBF[-From, -Elem, +To] = scala.collection.generic.CanBuildFrom[From, Elem, To]
+  @inline final type CTag[T]                = scala.reflect.ClassTag[T]
+  @inline final type Duration               = scala.concurrent.duration.Duration
+  @inline final type ExecCtx                = scala.concurrent.ExecutionContext
+  @inline final type Failure[+T]            = scala.util.Failure[T]
+  @inline final type FiniteDuration         = scala.concurrent.duration.FiniteDuration
+  @inline final type Future[+T]             = scala.concurrent.Future[T]
+  @inline final type Ref[+A]                = A with scala.AnyRef
+  @inline final type Success[+T]            = scala.util.Success[T]
+  @inline final type tailrec                = scala.annotation.tailrec
+  @inline final type Trav[+T]               = scala.collection.Traversable[T]
+  @inline final type TravOnce[+T]           = scala.collection.TraversableOnce[T]
+  @inline final type Try[+T]                = scala.util.Try[T]
 
-  @inline val ->             = scala.Product2
-  @inline val Duration       = scala.concurrent.duration.Duration
-  @inline val ExecCtx        = scala.concurrent.ExecutionContext
-  @inline val Failure        = scala.util.Failure
-  @inline val FiniteDuration = scala.concurrent.duration.FiniteDuration
-  @inline val Future         = scala.concurrent.Future
-  @inline val HALF_UP        = scala.math.BigDecimal.RoundingMode.HALF_UP
-  @inline val NonFatal       = scala.util.control.NonFatal
-  @inline val Success        = scala.util.Success
-  @inline val Trav           = scala.collection.Traversable
-  @inline val TravOnce       = scala.collection.TraversableOnce
-  @inline val Try            = scala.util.Try
+  @inline final val ->             = scala.Product2
+  @inline final val Duration       = scala.concurrent.duration.Duration
+  @inline final val ExecCtx        = scala.concurrent.ExecutionContext
+  @inline final val Failure        = scala.util.Failure
+  @inline final val FiniteDuration = scala.concurrent.duration.FiniteDuration
+  @inline final val Future         = scala.concurrent.Future
+  @inline final val HALF_UP        = scala.math.BigDecimal.RoundingMode.HALF_UP
+  @inline final val NonFatal       = scala.util.control.NonFatal
+  @inline final val Success        = scala.util.Success
+  @inline final val Trav           = scala.collection.Traversable
+  @inline final val TravOnce       = scala.collection.TraversableOnce
+  @inline final val Try            = scala.util.Try
 
-  val ISO_8601_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-  val UTC_TZ = java.util.TimeZone getTimeZone "UTC"
+  final val ISO_8601_FMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+  final val UTC_TZ = java.util.TimeZone getTimeZone "UTC"
 
-  @inline def idFun[T]: T => T           = t => t
-  @inline def const[T, U](x: T)(y: U): T = x
+  @inline final def idFun[T]: T => T           = t => t
+  @inline final def const[T, U](x: T)(y: U): T = x
 
-  @inline def nanoTime(): Long = java.lang.System.nanoTime
+  @inline final def nanoTime(): Long = java.lang.System.nanoTime
 
-  @inline def classTag[T: CTag]: CTag[T]      = implicitly[CTag[T]]
-//@inline def classOf[T: CTag]: Class[_ <: T] = classTag[T].runtimeClass.asInstanceOf[Class[_ <: T]]
+  @inline final def classTag[T: CTag]: CTag[T]      = implicitly[CTag[T]]
+//@inline final def classOf[T: CTag]: Class[_ <: T] = classTag[T].runtimeClass.asInstanceOf[Class[_ <: T]]
 
-  @inline def partial[T, U](pf: T ?=> U): T ?=> U = pf
+  @inline final def partial[T, U](pf: T ?=> U): T ?=> U = pf
 
-  @inline def breakOut[From, T, To](implicit cbf: CBF[Nothing, T, To]) = scala.collection.breakOut[From, T, To]
+  @inline final def breakOut[From, T, To](implicit cbf: CBF[Nothing, T, To]) =
+    scala.collection.breakOut[From, T, To]
 
-  def nowIso8601() =
+  final def nowIso8601() =
     new java.text.SimpleDateFormat(ISO_8601_FMT) doto (_ setTimeZone UTC_TZ) format new java.util.Date()
 
-  def timed[T](body: => T): T -> Duration = {
+  final def timed[T](body: => T): T -> Duration = {
     val t0 = nanoTime()
     val t = body
     val t1 = nanoTime()
     t -> (Duration fromNanos t1 - t0)
   }
 
-  @inline implicit def DurationInt(n: Int) = scala.concurrent.duration.DurationInt(n)
+  @inline implicit final def DurationInt(n: Int) = scala.concurrent.duration.DurationInt(n)
 
-  @inline implicit class AnyW[T](private val x: T) {
+  @inline implicit final class AnyW[T](private val x: T) {
     @inline def toUnit(): Unit = ()
     @inline def >>(): Unit = println(x)
 
@@ -105,34 +106,34 @@ trait ScalaKitPre {
     @inline def future: Future[T] = Future successful x
   }
 
-  @inline def none[T]: Option[T] = None
-  @inline def nil[T]: Seq[T] = Nil
+  @inline final def none[T]: Option[T] = None
+  @inline final def nil[T]: Seq[T] = Nil
 
-  @inline implicit class ThrowableW[T <: Throwable](private val t: T) {
+  @inline implicit final class ThrowableW[T <: Throwable](private val t: T) {
     @inline def failFut[U]: Future[U] = Future failed t
   }
 
-  @inline implicit class IntW(private val i: Int) {
+  @inline implicit final class IntW(private val i: Int) {
     @inline def bd: BigDecimal = BigDecimal(i)
 
     /** Integer division, rounding up */
     @inline def divUp(j: Int) = (i + j - 1) / j
   }
 
-  @inline implicit class LongW(private val l: Long) {
+  @inline implicit final class LongW(private val l: Long) {
     @inline def bd: BigDecimal = BigDecimal(l)
   }
 
-  @inline implicit class StringW(private val s: String) {
+  @inline implicit final class StringW(private val s: String) {
     @inline def bd: BigDecimal = BigDecimal(s)
   }
 
-  @inline implicit class BigDecimalW(private val bd: BigDecimal) {
+  @inline implicit final class BigDecimalW(private val bd: BigDecimal) {
     @inline def divOpt(i: Int): Option[BigDecimal] = if (i == 0) None else Some(bd / i)
     @inline def /?    (i: Int): Option[BigDecimal] = bd divOpt i
   }
 
-  @inline implicit class TryW[T](private val x: Try[T]) {
+  @inline implicit final class TryW[T](private val x: Try[T]) {
     @inline def fold[U](s: T => U, f: Throwable => U): U =
       x match {
         case Success(v) => s(v)
@@ -141,7 +142,7 @@ trait ScalaKitPre {
     @inline def valueOr[B >: T](f: Throwable => B): B = fold(identity, f)
   }
 
-  @inline implicit class DurationW(private val d: Duration) {
+  @inline implicit final class DurationW(private val d: Duration) {
     def toHHmmssSSS = {
       import TimeUnit._
       val l = d.toMillis
@@ -155,33 +156,33 @@ trait ScalaKitPre {
     }
   }
 
-  @inline implicit class FutureW[T](private val f: Future[T]) {
+  @inline implicit final class FutureW[T](private val f: Future[T]) {
     @inline def await(atMost: Duration): T = scala.concurrent.Await.result(f, atMost)
     @inline def await5s: T                 = f await 5.seconds
     @inline def await30s: T                = f await 30.seconds
   }
 
-  @inline implicit class FutureTravOnceW[T, M[X] <: TravOnce[X]](private val f: Future[M[T]]) {
+  @inline implicit final class FutureTravOnceW[T, M[X] <: TravOnce[X]](private val f: Future[M[T]]) {
     @inline def foldMap[U >: T](z: U)(op: (U, T) => U)(implicit ec: ExecCtx): Future[U] = foldLeftMap(z)(op)
     @inline def foldLeftMap[U] (z: U)(op: (U, T) => U)(implicit ec: ExecCtx): Future[U] = f map (_.foldLeft(z)(op))
   }
 
-  @inline implicit class TravOnceW[T, M[X] <: TravOnce[X]](private val xs: M[T]) {
+  @inline implicit final class TravOnceW[T, M[X] <: TravOnce[X]](private val xs: M[T]) {
     @inline def traverse[U](f: T => Future[U])(implicit cbf: CBF[M[T], U, M[U]], ec: ExecCtx): Future[M[U]] =
       Future.traverse(xs)(f)
   }
 
-  @inline implicit class TravOneFutureW[T, M[X] <: TravOnce[X]](private val fs: M[Future[T]]) {
+  @inline implicit final class TravOneFutureW[T, M[X] <: TravOnce[X]](private val fs: M[Future[T]]) {
     @inline def sequence(implicit cbf: CBF[M[Future[T]], T, M[T]], ec: ExecCtx): Future[M[T]]      = Future sequence fs
     @inline def firstCompletedOf                         (implicit ec: ExecCtx): Future[T]         = Future firstCompletedOf fs
     @inline def findFut(p: T => Boolean)                 (implicit ec: ExecCtx): Future[Option[T]] = Future.find(fs)(p)
     @inline def foldFut[R](z: R)(op: (R, T) => R)        (implicit ec: ExecCtx): Future[R]         = Future.fold(fs)(z)(op)
   }
 
-  @inline implicit class IntWithAlign(private val x: Int) {
+  @inline implicit final class IntWithAlign(private val x: Int) {
     @inline def lalign: String = if (x == 0) "%s" else s"%-${x}s"
     @inline def ralign: String = if (x == 0) "%s" else s"%${x}s"
   }
-  @inline def lalign(width: Int): String = width.lalign
-  @inline def ralign(width: Int): String = width.ralign
+  @inline final def lalign(width: Int): String = width.lalign
+  @inline final def ralign(width: Int): String = width.ralign
 }
