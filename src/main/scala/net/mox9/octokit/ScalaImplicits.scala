@@ -66,19 +66,21 @@ trait ScalaImplicits {
 
   @inline implicit class AnyW[T](private val x: T) {
     @inline def toUnit(): Unit = ()
+    @inline def >>(): Unit = println(x)
+
+    @inline def const[S]   :  S => T =  _ => x
+    @inline def constThunk : () => T = () => x
 
     @inline def |>[U](f: T => U): U    = f(x)
     @inline def pipe[U](f: T => U): U  = f(x)
     @inline def sideEffect(u: Unit): T = x
     @inline def doto(f: T => Unit): T  = sideEffect(f(x))
 
-    @inline def >>(): Unit = println(x)
-
     @inline def requiring(p: T => Boolean): Option[T] = if (p(x)) Some(x) else None
     @inline def isOr(p: T => Boolean)(alt: => T): T   = if (p(x)) x else alt
 
     @inline def maybe[U](pf: T ?=> U): Option[U]             = pf lift x
-    @inline def matchOr[U](alt: => U)(pf: T ?=> U): U        = pf.applyOrElse(x, const(alt))
+    @inline def matchOr[U](alt: => U)(pf: T ?=> U): U        = pf.applyOrElse(x, alt.const)
     @inline def flatMaybe[U](pf: T ?=> Option[U]): Option[U] = x.matchOr(none[U])(pf)
     @inline def maybeUnit(pf: T ?=> Unit): Unit              = x.matchOr(())(pf)
 
