@@ -16,6 +16,7 @@ trait PlayJsonImplicits {
   @inline type Reads[T]          = play.api.libs.json.Reads[T]
   @inline type Writes[-T]        = play.api.libs.json.Writes[T]
 
+  @inline val __                = play.api.libs.json.__
   @inline val JsError           = play.api.libs.json.JsError
   @inline val JsResultException = play.api.libs.json.JsResultException
   @inline val JsSuccess         = play.api.libs.json.JsSuccess
