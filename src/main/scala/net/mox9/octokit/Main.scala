@@ -5,6 +5,7 @@ import play.api._
 object Main {
   val userAgent = UserAgent("dwijnand")
 
+  // TODO: Move this out of T object
   val accessToken =
     sys.env get "GITHUB_API_TOKEN" map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
 

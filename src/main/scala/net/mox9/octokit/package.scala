@@ -3,6 +3,7 @@ package net.mox9
 // TODO: Tabulate class
 // TODO: Explore github.orgs("org-name").repos  .get?
 // TODO: Handle HTTP codes. Abstraction?
+// TODO: Figure out how to auto-stop on Ctrl-D in REPL
 package object octokit
   extends ScalaKitPre
      with TabularKitPre
