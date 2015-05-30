@@ -41,6 +41,7 @@ triggeredMessage := Watched.clearWhenTriggered
 libraryDependencies += "com.typesafe.play"   %% "play-ws" % "2.4.0"
 
 initialCommands in console += "\nimport net.mox9.octokit._"
+initialCommands in console += "\nimport net.mox9.octokit.T._"
 
 fork in run := true
 cancelable in Global :=  true
