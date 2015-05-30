@@ -58,6 +58,7 @@ final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig) {
 
 // ISO-8601: YYYY-MM-DDTHH:MM:SSZ
 
+// TODO: Consider Private/PublicRepo, Fork/Mirror/SourceRepo, & isPrivate/isFork/etc ops.
 final case class Repo(
   name      : String,
   `private` : Boolean,
@@ -69,6 +70,7 @@ object Repo {
 }
 
 // TODO: Revert this back to Option[String], sort pprinting elsewhere & output None as "-"
+// TODO: Alternatively see if this can be factored out to reduce noise/boilerplate
 sealed trait Lang extends Any { def value: String ; final override def toString = value }
 
 object Lang extends (String => Lang) {
