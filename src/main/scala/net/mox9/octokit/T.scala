@@ -11,26 +11,14 @@ object T {
   val appEnv = Environment simple (mode = Mode.Dev)
   val appLoadingCtx = ApplicationLoader createContext appEnv
 
-  class MyComponents(context: ApplicationLoader.Context)
+  class AppComponents(context: ApplicationLoader.Context)
     extends BuiltInComponentsFromContext(context)
        with play.api.libs.ws.ning.NingWSComponents
   {
     lazy val router = routing.Router.empty
   }
 
-/*
-  class MyApplicationLoader extends ApplicationLoader {
-    def load(context: ApplicationLoader.Context) = {
-      new MyComponents(context).application
-    }
-  }
-
-  val appLoader = new MyApplicationLoader
-
-  private val unstartedApp = appLoader load appLoadingCtx
-*/
-
-  val components = new MyComponents(appLoadingCtx)
+  val components = new AppComponents(appLoadingCtx)
   import components._
 
   val connectionConfig = ConnectionConfig(userAgent, accessToken)
