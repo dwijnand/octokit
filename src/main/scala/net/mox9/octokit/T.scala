@@ -11,29 +11,12 @@ object T {
   val appEnv = Environment simple (mode = Mode.Dev)
   val appLoadingCtx = ApplicationLoader createContext appEnv
 
-  class AppComponents(context: ApplicationLoader.Context)
-    extends BuiltInComponentsFromContext(context)
-       with play.api.libs.ws.ning.NingWSComponents
-  {
-    lazy val router = routing.Router.empty
-  }
-
-  val components = new AppComponents(appLoadingCtx)
-  import components._
-
   val connectionConfig = ConnectionConfig(userAgent, accessToken)
-
-  val github = new GitHubClient(wsClient, connectionConfig)
-
-  def stop(): Unit =
-    try
-      applicationLifecycle.stop() await Duration.Inf
-    catch {
-      case NonFatal(e) => Logger(T.getClass).warn("Error stopping.", e)
-    }
 
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
+
+    val t = new T; import t._
 
     try {
       val repos -> elapsed = timed {
@@ -44,4 +27,21 @@ object T {
       s"Took: ${elapsed.toHHmmssSSS}".>>
     } finally stop()
   }
+}
+
+class T
+  extends BuiltInComponentsFromContext(T.appLoadingCtx)
+     with play.api.libs.ws.ning.NingWSComponents
+{
+  import T._
+
+  val router = routing.Router.empty
+  val github = new GitHubClient(wsClient, connectionConfig)
+
+  def stop(): Unit =
+    try
+      applicationLifecycle.stop() await Duration.Inf
+    catch {
+      case NonFatal(e) => Logger(T.getClass).warn("Error stopping.", e)
+    }
 }
