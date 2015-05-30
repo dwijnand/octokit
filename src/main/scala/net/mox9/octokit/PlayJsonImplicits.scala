@@ -52,10 +52,7 @@ trait PlayJsonImplicits {
  // @inline def jsValues: Seq[JsValue]          = json.castToOpt[JsArray].fold(nil[JsValue])(_.value)
   }
 
-  @inline implicit class JsErrorW[T](private val e: JsError) {
-    // TODO: Remove to toJson?
-    @inline def toFlatJson: JsObject = JsError toJson e
-  }
+  implicit val JsErrorWrites = Writes[JsError](JsError.toJson)
 
   @inline implicit class FutureJsResultW[T](private val f: Future[JsResult[T]]) {
     @inline def flatten(implicit ec: ExecCtx): Future[T] =
