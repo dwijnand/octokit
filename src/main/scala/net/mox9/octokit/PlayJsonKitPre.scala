@@ -43,6 +43,8 @@ trait PlayJsonKitPre {
   @inline implicit final class Any2PlayJsonW[T](private val x: T) {
     @inline def toJson(implicit W: Writes[T]): JsValue    = Json toJson x
     @inline def js(implicit W: Writes[T]): JsValueWrapper = x
+
+    @inline def jsSuccess: JsSuccess[T] = JsSuccess(x)
   }
 
   @inline implicit final class Option2PlayJsonW[T](private val x: Option[T]) {
@@ -62,6 +64,8 @@ trait PlayJsonKitPre {
     @inline def toJsonStr: String               = Json stringify json
     @inline def fromJson[T: Reads]: JsResult[T] = Json fromJson json
  // @inline def jsValues: Seq[JsValue]          = json.castToOpt[JsArray].fold(nil[JsValue])(_.value)
+
+    @inline def isJsNull: Boolean = json == JsNull
   }
 
   implicit final val JsErrorWrites = Writes[JsError](JsError.toJson)
