@@ -57,29 +57,14 @@ final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig) {
     """<.+[?&]page=(\d+).*>; rel="last"""".r findFirstMatchIn link map (_ group 1 toInt)
 }
 
-// TODO: Consider Private/PublicRepo, Fork/Mirror/SourceRepo, & isPrivate/isFork/etc ops.
 final case class Repo(
   name      : String,
   `private` : Boolean,
   fork      : Boolean,
-  language  : RepoLang
+  language  : Option[String]
 )
 object Repo {
-  implicit val jsonReads: Reads[Repo] = Json.reads[Repo]
+  implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
 }
 
-// TODO: Revert this back to Option[String], sort pprinting elsewhere & output None as "-"
-// TODO: Alternatively see if this can be factored out to reduce noise/boilerplate
 trait StringVal extends Any { def value: String ; final override def toString = value }
-
-sealed trait RepoLang extends Any with StringVal
-case object NoRepoLang extends RepoLang { val value = "" }
-case class RepoLangImpl(value: String) extends AnyVal with RepoLang
-
-object RepoLang extends (String => RepoLang) {
-  def apply(s: String): RepoLang = s.trim pipe (s => if (s.isEmpty) NoRepoLang else RepoLangImpl(s))
-
-  implicit val jsonReads: Reads[RepoLang] =
-    Reads(json => if (json.isJsNull) NoRepoLang.jsSuccess else Reads.of[String] reads json map RepoLang)
-}
-
