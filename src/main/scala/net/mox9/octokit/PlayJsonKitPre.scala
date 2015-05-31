@@ -4,26 +4,30 @@ import scala.language.higherKinds
 import scala.language.implicitConversions
 
 import play.api.data.validation.ValidationError
-import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{ JsArray, JsNull, JsObject, JsPath, JsValue }
 
 trait PlayJsonKitPre {
   @inline final type JsError           = play.api.libs.json.JsError
+  @inline final type JsPath            = play.api.libs.json.JsPath
   @inline final type JsResultException = play.api.libs.json.JsResultException
   @inline final type JsResult[+T]      = play.api.libs.json.JsResult[T]
   @inline final type JsSuccess[T]      = play.api.libs.json.JsSuccess[T]
+  @inline final type JsValue           = play.api.libs.json.JsValue
+  @inline final type JsValueWrapper    = play.api.libs.json.Json.JsValueWrapper
   @inline final type JsonFormat[T]     = play.api.libs.json.Format[T]
   @inline final type Reads[T]          = play.api.libs.json.Reads[T]
   @inline final type Writes[-T]        = play.api.libs.json.Writes[T]
 
-  @inline final val __                = play.api.libs.json.__
   @inline final val JsError           = play.api.libs.json.JsError
+  @inline final val JsNull            = play.api.libs.json.JsNull
+  @inline final val JsPath            = play.api.libs.json.JsPath
   @inline final val JsResultException = play.api.libs.json.JsResultException
   @inline final val JsSuccess         = play.api.libs.json.JsSuccess
+  @inline final val JsValue           = play.api.libs.json.JsValue
   @inline final val Json              = play.api.libs.json.Json
   @inline final val JsonFormat        = play.api.libs.json.Format
   @inline final val Reads             = play.api.libs.json.Reads
   @inline final val Writes            = play.api.libs.json.Writes
+  @inline final val __                = play.api.libs.json.__
 
   @inline final def jsSuccess[T](x: T): JsResult[T] = JsSuccess(x)
   @inline final def jsError(errors: Seq[(JsPath, Seq[ValidationError])]): JsResult[Nothing] = JsError(errors)
