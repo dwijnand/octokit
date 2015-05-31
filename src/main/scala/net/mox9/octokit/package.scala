@@ -5,6 +5,7 @@ package net.mox9
 // TODO: Handle HTTP codes. Abstraction?
 // TODO: Figure out how to auto-stop on Ctrl-D in REPL
 // TODO: Enable higherKind/implicitConversions/more? in scalac opts
+// TODO: Handle IO error nicer then stacktrace in your face?
 package object octokit
   extends ScalaKitPre
      with TabularKitPre
