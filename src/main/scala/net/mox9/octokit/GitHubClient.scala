@@ -67,7 +67,7 @@ final case class Repo(
   language  : Lang
 )
 object Repo {
-  implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
+  implicit val jsonReads: Reads[Repo] = Json.reads[Repo]
 }
 
 // TODO: Revert this back to Option[String], sort pprinting elsewhere & output None as "-"
@@ -77,11 +77,8 @@ sealed trait Lang extends Any { def value: String ; final override def toString 
 object Lang extends (String => Lang) {
   def apply(s: String): Lang = s.trim pipe (s => if (s.isEmpty) NoLang else LangImpl(s))
 
-  implicit val jsFormat: JsonFormat[Lang] =
-    JsonFormat(
-      Reads.optionNoError[String] map { case None => NoLang ; case Some(s) => Lang(s) },
-      Writes(_.value.toJson)
-    )
+  implicit val jsonRead2: Reads[Lang] =
+    Reads(json => if (json.isJsNull) NoLang.jsSuccess else Reads.of[String] reads json map LangImpl)
 }
 
 case object NoLang extends Lang { val value = "" }
