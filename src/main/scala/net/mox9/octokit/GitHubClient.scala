@@ -79,7 +79,7 @@ case class LangImpl(value: String) extends AnyVal with Lang
 object Lang extends (String => Lang) {
   def apply(s: String): Lang = s.trim pipe (s => if (s.isEmpty) NoLang else LangImpl(s))
 
-  implicit val jsonRead2: Reads[Lang] =
-    Reads(json => if (json.isJsNull) NoLang.jsSuccess else Reads.of[String] reads json map LangImpl)
+  implicit val jsonReads: Reads[Lang] =
+    Reads(json => if (json.isJsNull) NoLang.jsSuccess else Reads.of[String] reads json map Lang)
 }
 
