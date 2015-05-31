@@ -62,7 +62,7 @@ final case class Repo(
   name      : String,
   `private` : Boolean,
   fork      : Boolean,
-  language  : Lang
+  language  : RepoLang
 )
 object Repo {
   implicit val jsonReads: Reads[Repo] = Json.reads[Repo]
@@ -72,14 +72,14 @@ object Repo {
 // TODO: Alternatively see if this can be factored out to reduce noise/boilerplate
 trait StringVal extends Any { def value: String ; final override def toString = value }
 
-sealed trait Lang extends Any with StringVal
-case object NoLang extends Lang { val value = "" }
-case class LangImpl(value: String) extends AnyVal with Lang
+sealed trait RepoLang extends Any with StringVal
+case object NoRepoLang extends RepoLang { val value = "" }
+case class RepoLangImpl(value: String) extends AnyVal with RepoLang
 
-object Lang extends (String => Lang) {
-  def apply(s: String): Lang = s.trim pipe (s => if (s.isEmpty) NoLang else LangImpl(s))
+object RepoLang extends (String => RepoLang) {
+  def apply(s: String): RepoLang = s.trim pipe (s => if (s.isEmpty) NoRepoLang else RepoLangImpl(s))
 
-  implicit val jsonReads: Reads[Lang] =
-    Reads(json => if (json.isJsNull) NoLang.jsSuccess else Reads.of[String] reads json map Lang)
+  implicit val jsonReads: Reads[RepoLang] =
+    Reads(json => if (json.isJsNull) NoRepoLang.jsSuccess else Reads.of[String] reads json map RepoLang)
 }
 
