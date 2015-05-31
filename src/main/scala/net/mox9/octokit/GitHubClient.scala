@@ -23,6 +23,7 @@ final class GitHubClient(ws: WSClient, connectionConfig: ConnectionConfig) {
 }
 
 final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig) {
+  /** @see https://developer.github.com/v3/repos/#list-organization-repositories */
   def getRepos(org: String): Future[Seq[Repo]] =
     (getReposResp(org, 1)
       flatMap { resp =>
