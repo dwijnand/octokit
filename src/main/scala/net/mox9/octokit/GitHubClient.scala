@@ -1,19 +1,14 @@
 package net.mox9.octokit
 
-//import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.functional.syntax._
 
 import scala.concurrent.ExecutionContext.Implicits._
 
-case class UserAgent(value: String) extends AnyVal {
-  override def toString = value
-}
+final case class UserAgent(value: String) extends AnyVal with StringVal
 
 sealed trait Credentials extends Any
 final case class BasicAuth(user: String, pass: String) extends Credentials
-case class AccessToken(value: String) extends AnyVal with Credentials {
-  override def toString = value
-}
+final case class AccessToken(value: String) extends AnyVal with StringVal with Credentials
 
 // TODO: Use Credentials
 final case class ConnectionConfig(userAgent: UserAgent, accessToken: AccessToken)
