@@ -57,8 +57,6 @@ final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig) {
     """<.+[?&]page=(\d+).*>; rel="last"""".r findFirstMatchIn link map (_ group 1 toInt)
 }
 
-// ISO-8601: YYYY-MM-DDTHH:MM:SSZ
-
 // TODO: Consider Private/PublicRepo, Fork/Mirror/SourceRepo, & isPrivate/isFork/etc ops.
 final case class Repo(
   name      : String,
@@ -72,7 +70,11 @@ object Repo {
 
 // TODO: Revert this back to Option[String], sort pprinting elsewhere & output None as "-"
 // TODO: Alternatively see if this can be factored out to reduce noise/boilerplate
-sealed trait Lang extends Any { def value: String ; final override def toString = value }
+trait StringVal extends Any { def value: String ; final override def toString = value }
+
+sealed trait Lang extends Any with StringVal
+case object NoLang extends Lang { val value = "" }
+case class LangImpl(value: String) extends AnyVal with Lang
 
 object Lang extends (String => Lang) {
   def apply(s: String): Lang = s.trim pipe (s => if (s.isEmpty) NoLang else LangImpl(s))
@@ -81,6 +83,3 @@ object Lang extends (String => Lang) {
     Reads(json => if (json.isJsNull) NoLang.jsSuccess else Reads.of[String] reads json map LangImpl)
 }
 
-case object NoLang extends Lang { val value = "" }
-
-case class LangImpl(value: String) extends AnyVal with Lang
