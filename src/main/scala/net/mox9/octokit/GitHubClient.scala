@@ -66,5 +66,3 @@ final case class Repo(
 object Repo {
   implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
 }
-
-trait StringVal extends Any { def value: String ; final override def toString = value }

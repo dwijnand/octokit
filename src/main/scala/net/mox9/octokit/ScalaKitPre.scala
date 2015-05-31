@@ -185,4 +185,6 @@ trait ScalaKitPre {
   }
   @inline final def lalign(width: Int): String = width.lalign
   @inline final def ralign(width: Int): String = width.ralign
+
+  trait StringVal extends Any { def value: String ; final override def toString = value }
 }
