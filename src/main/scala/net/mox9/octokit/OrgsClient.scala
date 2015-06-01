@@ -2,9 +2,9 @@ package net.mox9.octokit
 
 import play.api.libs.functional.syntax._
 
-import scala.concurrent.ExecutionContext.Implicits._
+final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig, actorSystem: ActorSystem) {
+  import actorSystem.dispatcher
 
-final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig) {
   /** @see https://developer.github.com/v3/repos/#list-organization-repositories */
   def getRepos(org: String): Future[Seq[Repo]] =
     (getReposResp(org, 1)
