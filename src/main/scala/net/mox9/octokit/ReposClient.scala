@@ -2,18 +2,20 @@ package net.mox9.octokit
 
 import play.api.libs.functional.syntax._
 
-final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig, actorSystem: ActorSystem) {
+final class ReposClient(ws: WSClient, connectionConfig: ConnectionConfig, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
 
   /** @see https://developer.github.com/v3/repos/#list-organization-repositories */
-  def getRepos(org: String): Future[Seq[Repo]] =
-    (getReposResp(org, 1)
+  def getOrgRepos(org: String): Future[Seq[Repo]] = getReposAtUrl(s"https://api.github.com/orgs/$org/repos")
+
+  private def getReposAtUrl(urlStr: String): Future[Seq[Repo]] =
+    (getReposResp(urlStr, 1)
       flatMap { resp =>
         resp.json.validate[Seq[Repo]] match {
           case jsError: JsError => jsError.future
           case reposJson        =>
             val remainingReposJson = resp header "Link" flatMap getPageCount match {
-              case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(org, _))
+              case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(urlStr, _))
               case None            => Vector.empty.future
             }
             remainingReposJson.foldMap(reposJson)(_ |+| _)
@@ -22,12 +24,12 @@ final class OrgsClient(ws: WSClient, connectionConfig: ConnectionConfig, actorSy
       flatten
     )
 
-  private def getReposJson(org: String, pageNum: Int): Future[JsResult[Seq[Repo]]] =
-    getReposResp(org, pageNum) map (_.json.validate[Seq[Repo]])
+  private def getReposJson(urlStr: String, pageNum: Int): Future[JsResult[Seq[Repo]]] =
+    getReposResp(urlStr, pageNum) map (_.json.validate[Seq[Repo]])
 
-  private def getReposResp(org: String, pageNum: Int): Future[WSResponse] =
+  private def getReposResp(urlStr: String, pageNum: Int): Future[WSResponse] =
     (ws
-      url s"https://api.github.com/orgs/$org/repos"
+      url urlStr
       withQueryString      "page" -> s"$pageNum"
       withHeaders    "User-Agent" -> s"${connectionConfig.userAgent}"
       withHeaders        "Accept" ->  "application/vnd.github.v3+json"

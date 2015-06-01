@@ -21,7 +21,7 @@ object Main {
 
     try {
       val repos -> elapsed = timed {
-        github.orgs getRepos org await30s
+        github.repos getOrgRepos org await30s
       }
       repos pipe (rs => s"${rs.length} repos".>>)
 
