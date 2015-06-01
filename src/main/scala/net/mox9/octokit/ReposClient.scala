@@ -2,9 +2,9 @@ package net.mox9.octokit
 
 import play.api.libs.functional.syntax._
 
-final case class Repo(name: String, `private`: Boolean, fork: Boolean, language: Option[String])
-object Repo {
-  implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
+final case class RepoSummary(name: String, `private`: Boolean, fork: Boolean, language: Option[String])
+object RepoSummary {
+  implicit val jsonFormat: JsonFormat[RepoSummary] = Json.format[RepoSummary]
 }
 
 // Alternative listYourRepos / listUserRepos
@@ -12,13 +12,13 @@ object Repo {
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
 
-  def getRepos()               : Future[Seq[Repo]] = getReposAtUrl(s"https://api.github.com/user/repos")
-  def getOrgRepos(org: String) : Future[Seq[Repo]] = getReposAtUrl(s"https://api.github.com/orgs/$org/repos")
+  def getRepos()               : Future[Seq[RepoSummary]] = getReposAtUrl(s"https://api.github.com/user/repos")
+  def getOrgRepos(org: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"https://api.github.com/orgs/$org/repos")
 
-  private def getReposAtUrl(urlStr: String): Future[Seq[Repo]] =
+  private def getReposAtUrl(urlStr: String): Future[Seq[RepoSummary]] =
     (getReposResp(urlStr, 1)
       flatMap { resp =>
-        resp.json.validate[Seq[Repo]] match {
+        resp.json.validate[Seq[RepoSummary]] match {
           case jsError: JsError => jsError.future
           case reposJson        =>
             val remainingReposJson = resp header "Link" flatMap getPageCount match {
@@ -31,8 +31,8 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
       flatten
     )
 
-  private def getReposJson(urlStr: String, pageNum: Int): Future[JsResult[Seq[Repo]]] =
-    getReposResp(urlStr, pageNum) map (_.json.validate[Seq[Repo]])
+  private def getReposJson(urlStr: String, pageNum: Int): Future[JsResult[Seq[RepoSummary]]] =
+    getReposResp(urlStr, pageNum) map (_.json.validate[Seq[RepoSummary]])
 
   private def getReposResp(urlStr: String, pageNum: Int): Future[WSResponse] =
     (gh
