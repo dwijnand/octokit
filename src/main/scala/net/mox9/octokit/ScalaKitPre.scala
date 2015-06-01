@@ -44,7 +44,8 @@ trait ScalaKitPre {
   @inline final def idFun[T]: T => T           = t => t
   @inline final def const[T, U](x: T)(y: U): T = x
 
-  @inline final def nanoTime(): Long = java.lang.System.nanoTime
+  @inline final def milliTime(): Long = java.lang.System.currentTimeMillis()
+  @inline final def  nanoTime(): Long = java.lang.System.nanoTime
 
   @inline final def classTag[T: CTag]: CTag[T]      = implicitly[CTag[T]]
 //@inline final def classOf[T: CTag]: Class[_ <: T] = classTag[T].runtimeClass.asInstanceOf[Class[_ <: T]]
