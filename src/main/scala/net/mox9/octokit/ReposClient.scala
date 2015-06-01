@@ -12,17 +12,17 @@ object RepoSummary {
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
 
-  def getRepos()               : Future[Seq[RepoSummary]] = getReposAtUrl(s"https://api.github.com/user/repos")
-  def getOrgRepos(org: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"https://api.github.com/orgs/$org/repos")
+  def getRepos()               : Future[Seq[RepoSummary]] = getReposAtUrl(s"/user/repos")
+  def getOrgRepos(org: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
 
-  private def getReposAtUrl(urlStr: String): Future[Seq[RepoSummary]] =
-    (getReposResp(urlStr, 1)
+  private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
+    (getReposResp(path, 1)
       flatMap { resp =>
         resp.json.validate[Seq[RepoSummary]] match {
           case jsError: JsError => jsError.future
           case reposJson        =>
             val remainingReposJson = resp header "Link" flatMap getPageCount match {
-              case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(urlStr, _))
+              case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(path, _))
               case None            => Vector.empty.future
             }
             remainingReposJson.foldMap(reposJson)(_ |+| _)
@@ -31,12 +31,12 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
       flatten
     )
 
-  private def getReposJson(urlStr: String, pageNum: Int): Future[JsResult[Seq[RepoSummary]]] =
-    getReposResp(urlStr, pageNum) map (_.json.validate[Seq[RepoSummary]])
+  private def getReposJson(path: String, pageNum: Int): Future[JsResult[Seq[RepoSummary]]] =
+    getReposResp(path, pageNum) map (_.json.validate[Seq[RepoSummary]])
 
-  private def getReposResp(urlStr: String, pageNum: Int): Future[WSResponse] =
+  private def getReposResp(path: String, pageNum: Int): Future[WSResponse] =
     (gh
-      url urlStr
+      url path
       withQueryString "page" -> s"$pageNum"
       withQueryString "sort" -> "updated"
       get()

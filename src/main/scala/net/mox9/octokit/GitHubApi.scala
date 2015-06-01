@@ -10,9 +10,9 @@ final class GitHubApi(ws: WSClient, connectionConfig: ConnectionConfig, actorSys
 }
 
 final class GitHubClient(val ws: WSClient, val connectionConfig: ConnectionConfig) {
-  def url(urlStr: String): WSRequest = {
+  def url(path: String): WSRequest = {
     (ws
-      url urlStr
+      url s"https://api.github.com$path"
       withHeaders    "User-Agent" -> s"${connectionConfig.userAgent}"
       withHeaders        "Accept" ->  "application/vnd.github.v3+json"
       withHeaders "Authorization" -> s"token ${connectionConfig.accessToken}"
