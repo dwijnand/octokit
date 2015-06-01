@@ -38,7 +38,8 @@ triggeredMessage := Watched.clearWhenTriggered
   wartremoverWarnings += Wart.TryPartial
   wartremoverWarnings += Wart.Var
 
-libraryDependencies += "com.typesafe.play"   %% "play-ws" % "2.4.0"
+libraryDependencies += "com.typesafe.play" %% "play-cache" % "2.4.0"
+libraryDependencies += "com.typesafe.play" %% "play-ws"    % "2.4.0"
 
 initialCommands in console += "\nimport net.mox9.octokit._"
 initialCommands in console += "\nval m = new Main ; import m._"
