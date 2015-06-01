@@ -2,12 +2,11 @@ package net.mox9.octokit
 
 import play.api.libs.functional.syntax._
 
+/** @see https://developer.github.com/v3/repos/ */
 final class ReposClient(ws: WSClient, connectionConfig: ConnectionConfig, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
 
-  // https://developer.github.com/v3/repos/#list-your-repositories */
-  // https://developer.github.com/v3/repos/#list-organization-repositories */
-  def getRepos()               : Future[Seq[Repo]] = getReposAtUrl("https://api.github.com/user/repos")
+  def getRepos()               : Future[Seq[Repo]] = getReposAtUrl(s"https://api.github.com/user/repos")
   def getOrgRepos(org: String) : Future[Seq[Repo]] = getReposAtUrl(s"https://api.github.com/orgs/$org/repos")
 
   private def getReposAtUrl(urlStr: String): Future[Seq[Repo]] =
