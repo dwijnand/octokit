@@ -3,7 +3,7 @@ package net.mox9.octokit
 import play.api.libs.functional.syntax._
 
 /** @see https://developer.github.com/v3/repos/ */
-final class ReposClient(ws: WSClient, connectionConfig: ConnectionConfig, actorSystem: ActorSystem) {
+final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
 
   def getRepos()               : Future[Seq[Repo]] = getReposAtUrl(s"https://api.github.com/user/repos")
@@ -29,12 +29,10 @@ final class ReposClient(ws: WSClient, connectionConfig: ConnectionConfig, actorS
     getReposResp(urlStr, pageNum) map (_.json.validate[Seq[Repo]])
 
   private def getReposResp(urlStr: String, pageNum: Int): Future[WSResponse] =
-    (ws
+    (gh
       url urlStr
-      withQueryString      "page" -> s"$pageNum"
-      withHeaders    "User-Agent" -> s"${connectionConfig.userAgent}"
-      withHeaders        "Accept" ->  "application/vnd.github.v3+json"
-      withHeaders "Authorization" -> s"token ${connectionConfig.accessToken}"
+      withQueryString "page" -> s"$pageNum"
+      withQueryString "sort" -> "updated"
       get()
     )
 

@@ -37,7 +37,7 @@ class Main
   import Main._
 
   val router = routing.Router.empty
-  val github = new GitHubClient(wsClient, connectionConfig, actorSystem)
+  val github = new GitHubApi(wsClient, connectionConfig, actorSystem)
 
   def stop(): Unit =
     try
