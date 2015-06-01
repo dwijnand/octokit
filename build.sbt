@@ -45,7 +45,7 @@ initialCommands in console += "\nimport net.mox9.octokit._"
 initialCommands in console += "\nval m = new Main ; import m._"
 
 fork in run := true
-cancelable in Global :=  true
+cancelable in Global := true
 
 watchSources ++= (baseDirectory.value * "*.sbt").get
 watchSources ++= (baseDirectory.value / "project" * "*.scala").get
