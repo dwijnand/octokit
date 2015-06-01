@@ -19,8 +19,3 @@ final class GitHubClient(val ws: WSClient, val connectionConfig: ConnectionConfi
     )
   }
 }
-
-final case class Repo(name: String, `private`: Boolean, fork: Boolean, language: Option[String])
-object Repo {
-  implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
-}

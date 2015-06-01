@@ -2,6 +2,11 @@ package net.mox9.octokit
 
 import play.api.libs.functional.syntax._
 
+final case class Repo(name: String, `private`: Boolean, fork: Boolean, language: Option[String])
+object Repo {
+  implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
+}
+
 /** @see https://developer.github.com/v3/repos/ */
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
