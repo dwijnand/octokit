@@ -5,7 +5,8 @@ import scala.language.implicitConversions
 
 import play.api.data.validation.ValidationError
 
-// TODO: Rename to JsReads/JsWrites
+// TODO: Rename to JsReads/JsWrites?
+// TODO: Rename JsonFormat to JsFormat?
 trait PlayJsonKitPre {
   @inline final type JsDefined         = play.api.libs.json.JsDefined
   @inline final type JsError           = play.api.libs.json.JsError

@@ -7,6 +7,7 @@ object Repo {
   implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
 }
 
+// Alternative listYourRepos / listUserRepos
 /** @see https://developer.github.com/v3/repos/ */
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
