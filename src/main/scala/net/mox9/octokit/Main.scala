@@ -26,6 +26,8 @@ object Main {
       repos pipe (rs => s"${rs.length} repos".>>)
 
       s"Took: ${elapsed.toHHmmssSSS}".>>
+    } catch {
+      case JsResultException(errors) => s"JSON errors:\n${JsError(errors).toJson.pp}".>>
     } finally stop()
   }
 }
