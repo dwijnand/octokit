@@ -18,16 +18,23 @@ object Main {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
     val m = new Main; import m._
+    import actorSystem.dispatcher
 
     try {
       val repos -> elapsed = timed {
-        github.repos getOrgRepos org await30s
+        gh.repos getOrgRepos org flatMap {
+          _ traverse { r =>
+            gh.repos.getRepo(r.owner.login, r.name)
+          }
+        } await30s
       }
       repos pipe (rs => s"${rs.length} repos".>>)
 
       s"Took: ${elapsed.toHHmmssSSS}".>>
     } catch {
-      case JsResultException(errors) => s"JSON errors:\n${JsError(errors).toJson.pp}".>>
+      case e @ JsResultException(errors) =>
+        s"JSON errors:\n${JsError(errors).toJson.pp}".>>
+        throw e
     } finally stop()
   }
 }
@@ -39,7 +46,7 @@ class Main
   import Main._
 
   val router = routing.Router.empty
-  val github = new GitHubApi(wsClient, connectionConfig, actorSystem)
+  val gh = new GitHubApi(wsClient, connectionConfig, actorSystem)
 
   def stop(): Unit =
     try
