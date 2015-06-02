@@ -198,7 +198,8 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   def getRepos()               : Future[Seq[RepoSummary]] = getReposAtUrl(s"/user/repos")
   def getOrgRepos(org: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
 
-  def getRepo(owner: String, repo: String): Future[Repo] = ???
+  def getRepo(owner: String, repo: String): Future[Repo] =
+    gh url s"/repos/$owner/$repo" get() map (_.json.validate[Repo]) flatten
 
   private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
     (getReposResp(path, 1)
