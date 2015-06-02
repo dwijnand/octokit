@@ -12,6 +12,7 @@ final case class User(
   url                 : Url,
   html_url            : Url,
   followers_url       : Url,
+  following_url       : Url,
   gists_url           : Url,
   starred_url         : Url,
   subscriptions_url   : Url,
