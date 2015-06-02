@@ -17,7 +17,7 @@ object Main {
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
-    val t = new Main; import t._
+    val m = new Main; import m._
 
     try {
       val repos -> elapsed = timed {

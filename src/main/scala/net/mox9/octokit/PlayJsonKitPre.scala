@@ -39,8 +39,8 @@ trait PlayJsonKitPre {
   @inline final val Writes            = play.api.libs.json.Writes
   @inline final val __                = play.api.libs.json.__
 
-  @inline final def jsSuccess[T](x: T): JsResult[T] = JsSuccess(x)
-  @inline final def jsError(errors: Seq[(JsPath, Seq[ValidationError])]): JsResult[Nothing] = JsError(errors)
+  @inline final def jsSuccess[T](x: T)                                   : JsResult[T]       = JsSuccess(x)
+  @inline final def jsError(errors: Seq[(JsPath, Seq[ValidationError])]) : JsResult[Nothing] = JsError(errors)
 
   @inline implicit final class Any2PlayJsonW[T](private val x: T) {
     @inline def toJson(implicit W: Writes[T]): JsValue    = Json toJson x
