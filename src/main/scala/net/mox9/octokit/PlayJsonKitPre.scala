@@ -81,4 +81,17 @@ trait PlayJsonKitPre {
         case JsError(errors)  => JsResultException(errors).failFut
       }
   }
+
+  @inline implicit final class Try2PlayJsonW[T](private val t: Try[T]) {
+    @inline def toJsResultNow: JsResult[T] =
+      t match {
+        case Success(x) => JsSuccess(x)
+        case Failure(e) => JsError(e.getMessage)
+      }
+    @inline def toJsResult(s: String): JsResult[T] =
+      t match {
+        case Success(x) => JsSuccess(x)
+        case Failure(e) => JsError(s + ": " + e.getMessage)
+      }
+  }
 }
