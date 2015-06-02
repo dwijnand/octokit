@@ -7,6 +7,11 @@ object RepoSummary {
   implicit val jsonFormat: JsonFormat[RepoSummary] = Json.format[RepoSummary]
 }
 
+final case class Repo(name: String)
+object Repo {
+  implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
+}
+
 // Alternative listYourRepos / listUserRepos
 /** @see https://developer.github.com/v3/repos/ */
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
@@ -14,6 +19,8 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
 
   def getRepos()               : Future[Seq[RepoSummary]] = getReposAtUrl(s"/user/repos")
   def getOrgRepos(org: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
+
+  def getRepo(owner: String, repo: String): Future[Repo] = ???
 
   private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
     (getReposResp(path, 1)
