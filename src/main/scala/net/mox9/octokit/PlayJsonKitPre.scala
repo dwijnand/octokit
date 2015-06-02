@@ -94,4 +94,10 @@ trait PlayJsonKitPre {
         case Failure(e) => JsError(s + ": " + e.getMessage)
       }
   }
+
+  implicit val urlJsonFormat: JsonFormat[Url] =
+    new JsonFormat[Url] {
+      def reads(json: JsValue) = json.validate[String] flatMap (s => Url(s) toJsResult "Invalid URL")
+      def writes(url: Url)     = url.toString.toJson
+    }
 }
