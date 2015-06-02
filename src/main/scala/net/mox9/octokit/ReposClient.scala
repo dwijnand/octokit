@@ -123,9 +123,71 @@ object RepoSummary {
     }
 }
 
-final case class Repo(name: String)
+final case class Repo(
+  id                : Long,
+  owner             : User,
+  name              : String,
+  full_name         : String,
+  description       : Option[String],
+  `private`         : Boolean,
+  fork              : Boolean,
+
+  url               : Url,
+  html_url          : Url,
+  clone_url         : Url,
+  git_url           : Url,
+  ssh_url           : Url,
+  svn_url           : Url,
+  mirror_url        : Option[Url],
+  homepage          : Option[Url],
+
+  language          : Option[String],
+  forks_count       : Int,
+  stargazers_count  : Int,
+  watchers_count    : Int,
+  size              : Int,
+  default_branch    : String,
+  open_issues_count : Int,
+  has_issues        : Boolean,
+  has_wiki          : Boolean,
+  has_pages         : Boolean,
+  has_downloads     : Boolean,
+  pushed_at         : ZonedDateTime,
+  created_at        : ZonedDateTime,
+  updated_at        : ZonedDateTime,
+  permissions       : RepoPermissions,
+
+  subscribers_count : Int,
+  organization      : User,
+  parent            : RepoSummary,
+  source            : RepoSummary
+)
 object Repo {
-  implicit val jsonFormat: JsonFormat[Repo] = Json.format[Repo]
+  import RepoSummary._
+  val reads4 = (
+    (__ \ "subscribers_count" ) .read[Int]         and
+    (__ \ "organization"      ) .read[User]        and
+    (__ \ "parent"            ) .read[RepoSummary] and
+    (__ \ "source"            ) .read[RepoSummary]
+  ).tupled
+
+  implicit val reads: Reads[Repo] =
+    reads1 and reads2 and reads3 and reads4 apply { (v1, v2, v3, v4) =>
+      val (id, owner, name, full_name, description, private1, fork) = v1
+      val (url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage) = v2
+      val (
+        language, fork_count, stargazers_count, watchers_count, size, default_branch, open_issues_count,
+        has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions
+      ) = v3
+      val (subscribers_count, organization, parent, source) = v4
+      Repo(
+        id, owner, name, full_name, description, private1, fork,
+        url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage,
+        language, fork_count, stargazers_count, watchers_count, size, default_branch, open_issues_count,
+        has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions,
+        subscribers_count, organization, parent, source
+      )
+    }
 }
 
 // Alternative listYourRepos / listUserRepos
