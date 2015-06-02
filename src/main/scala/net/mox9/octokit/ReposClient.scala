@@ -67,61 +67,60 @@ final case class RepoSummary(
   permissions       : RepoPermissions
 )
 object RepoSummary {
-  implicit val jsonReads: Reads[RepoSummary] = {
-    val r1 = (
-      (__ \ "id"          ) .read[Long]           and
-      (__ \ "owner"       ) .read[User]           and
-      (__ \ "name"        ) .read[String]         and
-      (__ \ "full_name"   ) .read[String]         and
-      (__ \ "description" ) .readNullable[String] and
-      (__ \ "private"     ) .read[Boolean]        and
-      (__ \ "fork"        ) .read[Boolean]
-    ).tupled
-    val r2 = (
-      (__ \ "url"        ) .read[Url] and
-      (__ \ "html_url"   ) .read[Url] and
-      (__ \ "clone_url"  ) .read[Url] and
-      (__ \ "git_url"    ) .read[Url] and
-      (__ \ "ssh_url"    ) .read[Url] and
-      (__ \ "svn_url"    ) .read[Url] and
-      (__ \ "mirror_url" ) .readNullable[Url] and
-      (__ \ "homepage"   ) .readNullable[Url]
-    ).tupled
-    val r3 = (
-      (__ \ "language"          ) .readNullable[String]  and
-      (__ \ "forks_count"       ) .read[Int]             and
-      (__ \ "stargazers_count"  ) .read[Int]             and
-      (__ \ "watchers_count"    ) .read[Int]             and
-      (__ \ "size"              ) .read[Int]             and
-      (__ \ "default_branch"    ) .read[String]          and
-      (__ \ "open_issues_count" ) .read[Int]             and
-      (__ \ "has_issues"        ) .read[Boolean]         and
-      (__ \ "has_wiki"          ) .read[Boolean]         and
-      (__ \ "has_pages"         ) .read[Boolean]         and
-      (__ \ "has_downloads"     ) .read[Boolean]         and
-      (__ \ "pushed_at"         ) .read[ZonedDateTime]   and
-      (__ \ "created_at"        ) .read[ZonedDateTime]   and
-      (__ \ "updated_at"        ) .read[ZonedDateTime]   and
-      (__ \ "permissions"       ) .read[RepoPermissions]
-    ).tupled
+  val reads1 = (
+    (__ \ "id"          ) .read[Long]           and
+    (__ \ "owner"       ) .read[User]           and
+    (__ \ "name"        ) .read[String]         and
+    (__ \ "full_name"   ) .read[String]         and
+    (__ \ "description" ) .readNullable[String] and
+    (__ \ "private"     ) .read[Boolean]        and
+    (__ \ "fork"        ) .read[Boolean]
+  ).tupled
 
-    val r: Reads[RepoSummary] = r1 and r2 and r3 apply { (v1, v2, v3) =>
-        val (id, owner, name, full_name, description, private1, fork) = v1
-        val (url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage) = v2
-        val (
-          language, fork_count, stargazers_count, watchers_count, size, default_branch, open_issues_count,
-          has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions
-        ) = v3
-        RepoSummary(
-          id, owner, name, full_name, description, private1, fork,
-          url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage,
-          language, fork_count, stargazers_count, watchers_count, size, default_branch, open_issues_count,
-          has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions
-        )
+  val reads2 = (
+    (__ \ "url"        ) .read[Url] and
+    (__ \ "html_url"   ) .read[Url] and
+    (__ \ "clone_url"  ) .read[Url] and
+    (__ \ "git_url"    ) .read[Url] and
+    (__ \ "ssh_url"    ) .read[Url] and
+    (__ \ "svn_url"    ) .read[Url] and
+    (__ \ "mirror_url" ) .readNullable[Url] and
+    (__ \ "homepage"   ) .readNullable[Url]
+  ).tupled
+
+  val reads3 = (
+    (__ \ "language"          ) .readNullable[String]  and
+    (__ \ "forks_count"       ) .read[Int]             and
+    (__ \ "stargazers_count"  ) .read[Int]             and
+    (__ \ "watchers_count"    ) .read[Int]             and
+    (__ \ "size"              ) .read[Int]             and
+    (__ \ "default_branch"    ) .read[String]          and
+    (__ \ "open_issues_count" ) .read[Int]             and
+    (__ \ "has_issues"        ) .read[Boolean]         and
+    (__ \ "has_wiki"          ) .read[Boolean]         and
+    (__ \ "has_pages"         ) .read[Boolean]         and
+    (__ \ "has_downloads"     ) .read[Boolean]         and
+    (__ \ "pushed_at"         ) .read[ZonedDateTime]   and
+    (__ \ "created_at"        ) .read[ZonedDateTime]   and
+    (__ \ "updated_at"        ) .read[ZonedDateTime]   and
+    (__ \ "permissions"       ) .read[RepoPermissions]
+  ).tupled
+
+  implicit val jsonReads: Reads[RepoSummary] =
+    reads1 and reads2 and reads3 apply { (v1, v2, v3) =>
+      val (id, owner, name, full_name, description, private1, fork) = v1
+      val (url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage) = v2
+      val (
+        language, fork_count, stargazers_count, watchers_count, size, default_branch, open_issues_count,
+        has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions
+      ) = v3
+      RepoSummary(
+        id, owner, name, full_name, description, private1, fork,
+        url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage,
+        language, fork_count, stargazers_count, watchers_count, size, default_branch, open_issues_count,
+        has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions
+      )
     }
-
-    r
-  }
 }
 
 final case class Repo(name: String)
