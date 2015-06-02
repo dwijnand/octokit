@@ -64,10 +64,10 @@ trait PlayJsonKitPre {
   }
 
   @inline implicit final class JsValueW(private val json: JsValue) {
-    @inline def pp: String                      = Json prettyPrint json
-    @inline def toJsonStr: String               = Json stringify json
-    @inline def fromJson[T: Reads]: JsResult[T] = Json fromJson json
- // @inline def jsValues: Seq[JsValue]          = json.castToOpt[JsArray].fold(nil[JsValue])(_.value)
+    @inline def pp: String                            = Json prettyPrint json
+    @inline def toJsonStr: String                     = Json stringify json
+    @inline def fromJson[T](z: Reads[T]): JsResult[T] = Json.fromJson(json)(z)
+ // @inline def jsValues: Seq[JsValue]                = json.castToOpt[JsArray].fold(nil[JsValue])(_.value)
 
     @inline def isJsNull: Boolean = json == JsNull
   }
