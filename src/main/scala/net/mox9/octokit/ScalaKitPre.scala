@@ -1,8 +1,5 @@
 package net.mox9.octokit
 
-import scala.language.higherKinds
-import scala.language.implicitConversions
-
 import java.util.concurrent.TimeUnit
 
 // TODO: Checkout more std package

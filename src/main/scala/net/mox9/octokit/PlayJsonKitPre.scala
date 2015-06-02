@@ -1,8 +1,5 @@
 package net.mox9.octokit
 
-import scala.language.higherKinds
-import scala.language.implicitConversions
-
 import play.api.data.validation.ValidationError
 
 // TODO: Rename to JsReads/JsWrites?

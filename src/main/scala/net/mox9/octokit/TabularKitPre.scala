@@ -1,8 +1,5 @@
 package net.mox9.octokit
 
-import scala.language.higherKinds
-import scala.language.implicitConversions
-
 // TODO: Consider Product.showP
 trait TabularKitPre {
   private def trimHeader(h: String): Int => String = {
