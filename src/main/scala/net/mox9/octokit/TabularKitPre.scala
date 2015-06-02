@@ -19,6 +19,7 @@ trait TabularKitPre {
           val rows = xs.toVector map (_.productIterator.toVector map (_.toString))
           val cols = (0 until h.productArity).toVector map (idx => xs map (_.productElement(idx).toString))
 
+          // TODO: deal with > 267 chars
           val widths = cols map (col => col map (_.length) max)
 
           val headers0 = h.getClass.getDeclaredFields.toVector map (_.getName)
