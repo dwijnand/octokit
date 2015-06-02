@@ -15,6 +15,7 @@ trait PlayJsonKitPre {
   @inline final type JsPath            = play.api.libs.json.JsPath
   @inline final type JsResultException = play.api.libs.json.JsResultException
   @inline final type JsResult[+T]      = play.api.libs.json.JsResult[T]
+  @inline final type JsString          = play.api.libs.json.JsString
   @inline final type JsSuccess[T]      = play.api.libs.json.JsSuccess[T]
   @inline final type JsUndefined       = play.api.libs.json.JsUndefined
   @inline final type JsValue           = play.api.libs.json.JsValue
@@ -30,6 +31,7 @@ trait PlayJsonKitPre {
   @inline final val JsNull            = play.api.libs.json.JsNull
   @inline final val JsPath            = play.api.libs.json.JsPath
   @inline final val JsResultException = play.api.libs.json.JsResultException
+  @inline final val JsString          = play.api.libs.json.JsString
   @inline final val JsSuccess         = play.api.libs.json.JsSuccess
   @inline final val JsUndefined       = play.api.libs.json.JsUndefined
   @inline final val JsValue           = play.api.libs.json.JsValue
