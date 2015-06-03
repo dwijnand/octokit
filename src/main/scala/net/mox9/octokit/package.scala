@@ -9,6 +9,8 @@ package net.mox9
 // TODO: Add query params to API calls
 // TODO: Add support for using Resp ETag and sending as If-None-Match
 // TODO: Compare data field types with other octokits
+// TODO: RateLimitClient https://developer.github.com/v3/rate_limit/
+// TODO: Add caching on ETag
 package object octokit
   extends ScalaKitPre
      with TabularKitPre
