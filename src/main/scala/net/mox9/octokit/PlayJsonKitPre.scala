@@ -18,6 +18,7 @@ trait PlayJsonKitPre {
   @inline final type JsValue           = play.api.libs.json.JsValue
   @inline final type JsValueWrapper    = play.api.libs.json.Json.JsValueWrapper
   @inline final type JsonFormat[T]     = play.api.libs.json.Format[T]
+  @inline final type OWrites[-T]       = play.api.libs.json.OWrites[T]
   @inline final type Reads[T]          = play.api.libs.json.Reads[T]
   @inline final type Writes[-T]        = play.api.libs.json.Writes[T]
 
@@ -34,6 +35,7 @@ trait PlayJsonKitPre {
   @inline final val JsValue           = play.api.libs.json.JsValue
   @inline final val Json              = play.api.libs.json.Json
   @inline final val JsonFormat        = play.api.libs.json.Format
+  @inline final val OWrites           = play.api.libs.json.OWrites
   @inline final val Reads             = play.api.libs.json.Reads
   @inline final val Writes            = play.api.libs.json.Writes
   @inline final val __                = play.api.libs.json.__
