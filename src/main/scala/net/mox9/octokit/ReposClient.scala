@@ -123,8 +123,9 @@ object RepoSummary {
         has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions
       )
     }
-  implicit val jsonWrites: Writes[RepoSummary] =
-    Writes { rs => import rs._
+
+  val writes1 =
+    OWrites[RepoSummary] { rs => import rs._
       Json.obj(
         "id"                -> id,
         "owner"             -> owner,
@@ -154,10 +155,13 @@ object RepoSummary {
         "has_downloads"     -> has_downloads,
         "pushed_at"         -> pushed_at,
         "created_at"        -> created_at,
-        "updated_at"        -> updated_at,
-        "permissions"       -> permissions
+        "updated_at"        -> updated_at
       )
     }
+
+  val writes2 = OWrites[RepoSummary](rs => Json.obj("permissions" -> rs.permissions))
+
+  implicit val jsonWrites:     Writes[RepoSummary] = (writes1 ~ writes2).join
   implicit val jsonFormat: JsonFormat[RepoSummary] = JsonFormat(jsonReads, jsonWrites)
 }
 
