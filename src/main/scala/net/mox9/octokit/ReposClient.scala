@@ -24,7 +24,7 @@ final case class User(
   site_admin          : Boolean
 )
 object User {
-  implicit val jsonFormat: JsonFormat[User] = Json.format[User]
+  implicit val jsonFormat: OFormat[User] = Json.format[User]
 }
 
 final case class RepoPermissions(admin: Boolean, push: Boolean, pull: Boolean)
