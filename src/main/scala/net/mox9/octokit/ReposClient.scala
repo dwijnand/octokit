@@ -108,7 +108,7 @@ object RepoSummary {
 
   val reads4 = (__ \ "permissions").readNullable[RepoPermissions]
 
-  implicit val jsonReads: Reads[RepoSummary] =
+  val jsonReads: Reads[RepoSummary] =
     reads1 and reads2 and reads3 and reads4 apply { (v1, v2, v3, permissions) =>
       val (id, owner, name, full_name, description, private1, fork) = v1
       val (url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage) = v2
@@ -161,8 +161,9 @@ object RepoSummary {
 
   val writes2 = OWrites[RepoSummary](rs => Json.obj("permissions" -> rs.permissions))
 
-  implicit val jsonWrites:     Writes[RepoSummary] = (writes1 ~ writes2).join
-  implicit val jsonFormat: JsonFormat[RepoSummary] = JsonFormat(jsonReads, jsonWrites)
+  val jsonWrites: OWrites[RepoSummary] = (writes1 ~ writes2).join
+
+  implicit val jsonFormat: OFormat[RepoSummary] = OFormat(jsonReads, jsonWrites)
 }
 
 final case class Repo(
@@ -214,7 +215,7 @@ object Repo {
     (__ \ "source"            ) .readNullable[RepoSummary]
   ).tupled
 
-  implicit val jsonReads: Reads[Repo] =
+  val jsonReads: Reads[Repo] =
     reads1 and reads2 and reads3 and reads4 apply { (v1, v2, v3, v4) =>
       val (id, owner, name, full_name, description, private1, fork) = v1
       val (url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage) = v2
@@ -243,7 +244,7 @@ object Repo {
       )
     }
 
-  implicit val jsonWrites: Writes[Repo] =
+  val jsonWrites: OWrites[Repo] =
     (writes1 ~ writes2) { r =>
       val rs = RepoSummary(
         id                = r.id,
@@ -283,7 +284,7 @@ object Repo {
       (rs, r)
     }
 
-  implicit val jsonFormat: JsonFormat[Repo] = JsonFormat(jsonReads, jsonWrites)
+  implicit val jsonFormat: OFormat[Repo] = OFormat(jsonReads, jsonWrites)
 }
 
 /** @see https://developer.github.com/v3/repos/ */
