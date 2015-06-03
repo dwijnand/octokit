@@ -8,6 +8,7 @@ package net.mox9
 // TODO: Add BasicAuth support?
 // TODO: Add query params to API calls
 // TODO: Add support for using Resp ETag and sending as If-None-Match
+// TODO: Compare data field types with other octokits
 package object octokit
   extends ScalaKitPre
      with TabularKitPre
