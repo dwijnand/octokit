@@ -18,18 +18,10 @@ object Main {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
     val m = new Main; import m._
-    import actorSystem.dispatcher
 
     try {
-      val repos -> elapsed = timed {
-        gh.repos getOrgRepos org flatMap {
-          _ traverse { r =>
-            gh.repos.getRepo(r.owner.login, r.name)
-          }
-        } await30s
-      }
+      val repos -> elapsed = timed(getFullOrgRepos(org).await30s)
       repos pipe (rs => s"${rs.length} repos".>>)
-
       s"Took: ${elapsed.toHHmmssSSS}".>>
     } catch {
       case e @ JsResultException(errors) =>
@@ -47,6 +39,14 @@ class Main
 
   val router = routing.Router.empty
   val gh = new GitHubApi(wsClient, connectionConfig, actorSystem)
+  import actorSystem.dispatcher
+
+  def getFullOrgRepos(org: String) =
+    gh.repos getOrgRepos org flatMap {
+      _ traverse { r =>
+        gh.repos.getRepo(r.owner.login, r.name)
+      }
+    }
 
   def stop(): Unit =
     try
