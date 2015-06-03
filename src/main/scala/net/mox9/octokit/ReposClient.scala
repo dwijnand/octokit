@@ -123,6 +123,42 @@ object RepoSummary {
         has_issues, has_wiki, has_pages, has_downloads, pushed_at, created_at, updated_at, permissions
       )
     }
+  implicit val jsonWrites: Writes[RepoSummary] =
+    Writes { rs => import rs._
+      Json.obj(
+        "id"                -> id,
+        "owner"             -> owner,
+        "name"              -> name,
+        "full_name"         -> full_name,
+        "description"       -> description,
+        "private"           -> `private`,
+        "fork"              -> fork,
+        "url"               -> url,
+        "html_url"          -> html_url,
+        "clone_url"         -> clone_url,
+        "git_url"           -> git_url,
+        "ssh_url"           -> ssh_url,
+        "svn_url"           -> svn_url,
+        "mirror_url"        -> mirror_url,
+        "homepage"          -> homepage,
+        "language"          -> language,
+        "forks_count"       -> forks_count,
+        "stargazers_count"  -> stargazers_count,
+        "watchers_count"    -> watchers_count,
+        "size"              -> size,
+        "default_branch"    -> default_branch,
+        "open_issues_count" -> open_issues_count,
+        "has_issues"        -> has_issues,
+        "has_wiki"          -> has_wiki,
+        "has_pages"         -> has_pages,
+        "has_downloads"     -> has_downloads,
+        "pushed_at"         -> pushed_at,
+        "created_at"        -> created_at,
+        "updated_at"        -> updated_at,
+        "permissions"       -> permissions
+      )
+    }
+  implicit val jsonFormat: JsonFormat[RepoSummary] = JsonFormat(jsonReads, jsonWrites)
 }
 
 final case class Repo(
