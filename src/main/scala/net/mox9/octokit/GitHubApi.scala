@@ -1,8 +1,16 @@
 package net.mox9.octokit
 
 final case class UserAgent(value: String) extends AnyVal with StringVal
+object UserAgent extends (String => UserAgent) {
+  implicit def lift(s: String) = UserAgent(s)
+}
+
 final case class AccessToken(value: String) extends AnyVal with StringVal
-final case class ConnectionConfig(userAgent: UserAgent, accessToken: AccessToken)
+object AccessToken extends (String => AccessToken) {
+  implicit def lift(s: String) = AccessToken(s)
+}
+
+final case class ConnectionConfig(accessToken: AccessToken, userAgent: UserAgent)
 
 final class GitHubApi(ws: WSClient, connectionConfig: ConnectionConfig, actorSystem: ActorSystem) {
   val gh    = new GitHubClient(ws: WSClient, connectionConfig)

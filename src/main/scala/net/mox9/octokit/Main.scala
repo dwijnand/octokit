@@ -12,7 +12,7 @@ object Main {
   val appEnv = Environment simple (mode = Mode.Dev)
   val appLoadingCtx = ApplicationLoader createContext appEnv
 
-  val connectionConfig = ConnectionConfig(userAgent, accessToken)
+  val connectionConfig = ConnectionConfig(accessToken, userAgent)
 
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
