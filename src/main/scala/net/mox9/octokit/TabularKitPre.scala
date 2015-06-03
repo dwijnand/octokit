@@ -30,6 +30,22 @@ trait TabularKitPre {
     @inline def showPs()  = tabularPs foreach println
   }
 
+  @inline implicit final class MatrixWithTabular[T](private val xss: Trav[Trav[T]]) {
+    @inline def tabularM = {
+      val maxWidth = xss.toVector.foldLeft(0)((acc, x) => acc max x.size)
+
+      val rows = xss.toVector map (_.toVector map (_.toString) padTo(maxWidth, ""))
+
+      val cols = (0 until maxWidth).toVector map (idx => xss map (_.toIndexedSeq.applyOrElse(idx, (_: Int) => "").toString))
+
+      val widths = cols map (col => col map (_.length) max)
+
+      val rowFormat = widths map ralign mkString " "
+      rows map (row => rowFormat.format(row.seq: _*))
+    }
+    @inline def showM()  = tabularM foreach println
+  }
+
   @inline implicit final class MapWithTabular[K, V](private val xs: Trav[K -> V]) {
     @inline def maxKeyLen = xs.toIterator.map(_._1.toString.length).max
     @inline def tabularKV = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
