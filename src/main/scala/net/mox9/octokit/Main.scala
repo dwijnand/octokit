@@ -3,21 +3,18 @@ package net.mox9.octokit
 import play.api._
 
 object Main {
-  val userAgent = UserAgent("dwijnand")
-
-  // TODO: Move this out of T object
-  val accessToken =
-    sys.env get "GITHUB_API_TOKEN" map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
-
   val appEnv = Environment simple (mode = Mode.Dev)
   val appLoadingCtx = ApplicationLoader createContext appEnv
-
-  val connectionConfig = ConnectionConfig(accessToken, userAgent)
 
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
-    val m = new Main; import m._
+    val accessToken =
+      sys.env get "GITHUB_API_TOKEN" map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
+
+    val connectionConfig = ConnectionConfig create accessToken
+
+    val m = new Main(connectionConfig); import m._
 
     try {
       val repos -> elapsed = timed(getFullOrgRepos(org).await30s)
@@ -31,11 +28,10 @@ object Main {
   }
 }
 
-class Main
+class Main(connectionConfig: ConnectionConfig)
   extends BuiltInComponentsFromContext(Main.appLoadingCtx)
      with play.api.libs.ws.ning.NingWSComponents
 {
-  import Main._
 
   val router = routing.Router.empty
   val gh = new GitHubApi(wsClient, connectionConfig, actorSystem)

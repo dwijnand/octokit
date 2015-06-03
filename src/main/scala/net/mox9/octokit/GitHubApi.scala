@@ -11,6 +11,9 @@ object AccessToken extends (String => AccessToken) {
 }
 
 final case class ConnectionConfig(accessToken: AccessToken, userAgent: UserAgent)
+object ConnectionConfig {
+  def create(accessToken: AccessToken) = ConnectionConfig(accessToken, "Octokit Scala Client")
+}
 
 final class GitHubApi(ws: WSClient, connectionConfig: ConnectionConfig, actorSystem: ActorSystem) {
   val gh    = new GitHubClient(ws: WSClient, connectionConfig)
@@ -18,6 +21,7 @@ final class GitHubApi(ws: WSClient, connectionConfig: ConnectionConfig, actorSys
 }
 
 final class GitHubClient(val ws: WSClient, val connectionConfig: ConnectionConfig) {
+  // TODO: Rename to path, and type it perhaps
   def url(path: String): WSRequest = {
     (ws
       url s"https://api.github.com$path"
