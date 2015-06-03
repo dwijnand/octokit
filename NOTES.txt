@@ -30,3 +30,7 @@ ws.url("https://api.github.com").get().map(_.json.as[Map[String, String]].toVect
                             user_url https://api.github.com/users/{user}
                user_repositories_url https://api.github.com/users/{user}/repos{?type,page,per_page,sort}
 current_user_authorizations_html_url https://github.com/settings/connections/applications{/client_id}
+
+https://github.com/eclipse/egit-github/tree/master/org.eclipse.egit.github.core
+http://github-api.kohsuke.org/
+http://github.jcabi.com/
