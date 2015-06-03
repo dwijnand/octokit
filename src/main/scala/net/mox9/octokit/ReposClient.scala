@@ -373,25 +373,38 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   def getRepo(owner: String, repo: String): Future[Repo] =
     gh url s"/repos/$owner/$repo" get() map (_.json.as[Repo])
 
-  def getRepoContributors(owner: String, repo: String) = {
-    gh url s"/repos/$owner/$repo/contributors" get()
-  }
+  def getRepoContributors(owner: String, repo: String): Future[Seq[Contributor]] = (
+    gh
+      url s"/repos/$owner/$repo/contributors"
+      get()
+      flatMap {
+        case r if r.status == 200 => r.json.as[Seq[Contributor]].future
+        case r if r.status == 204 => Nil.future
+        case r if r.status == 403 => handle403(r)
+        case r                    =>
+          sys error s"Unhandled status: ${r.status}, body:\n${r.body}"
+      }
+  )
 
   def getRepoLanguage(owner: String, repo: String): Future[Map[String, Int]] =
     gh url s"/repos/$owner/$repo/languages" get() map (_.json.as[Map[String, Int]])
 
   private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
     (getReposResp(path, 1)
-      flatMap { r =>
-        r.json.as[Seq[RepoSummary]] match {
-          case jsError: JsError => jsError.future
-          case reposJson        =>
-            val remainingReposJson = r header "Link" flatMap getPageCount match {
-              case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(path, _))
-              case None            => Vector.empty.future
-            }
-            remainingReposJson.foldMap(reposJson)(_ |+| _)
-        }
+      flatMap {
+        case r if r.status == 200 =>
+          r.json.as[Seq[RepoSummary]] match {
+            case jsError: JsError => jsError.future
+            case reposJson        =>
+              val remainingReposJson = r header "Link" flatMap getPageCount match {
+                case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(path, _))
+                case None            => Vector.empty.future
+              }
+              remainingReposJson.foldMap(reposJson)(_ |+| _)
+          }
+        case r if r.status == 204 => Nil.future
+        case r if r.status == 403 => handle403(r)
+        case r                    => sys error s"Unhandled status: ${r.status}, body:\n${r.body}"
       }
     )
 
@@ -408,4 +421,13 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
 
   private def getPageCount(link: String) =
     """<.+[?&]page=(\d+).*>; rel="last"""".r findFirstMatchIn link map (_ group 1 toInt)
+
+  private def handle403(r: WSResponse) = {
+    val reset1 = r header "X-RateLimit-Reset" map (_.toLong) map Instant.ofEpochSecond
+    val reset2 = reset1 map (i => s"(reset at $i)") getOrElse ""
+    sys error s"Probably rate limited$reset2, got: ${r.status}, body: \n${r.json.pp}"
+    // X-RateLimit-Limit        The maximum number of requests that the consumer is permitted to make per hour.
+    // X-RateLimit-Remaining    The number of requests remaining in the current rate limit window.
+    // X-RateLimit-Reset        The time at which the current rate limit window resets in UTC epoch seconds.
+  }
 }
