@@ -204,6 +204,9 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   def getRepo(owner: String, repo: String): Future[Repo] =
     gh url s"/repos/$owner/$repo" get() map (_.json.as[Repo])
 
+  def getRepoLanguage(owner: String, repo: String): Future[Map[String, Int]] =
+    gh url s"/repos/$owner/$repo/languages" get() map (_.json.as[Map[String, Int]])
+
   private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
     (getReposResp(path, 1)
       flatMap { resp =>
