@@ -359,7 +359,7 @@ object Contributor {
       (u, c)
     }
 
-  implicit val jsonFormat: OFormat[Contributor] = OFormat[Contributor](jsonReads, jsonFormat)
+  implicit val jsonFormat: OFormat[Contributor] = OFormat[Contributor](jsonReads, jsonWrites)
 }
 
 /** @see https://developer.github.com/v3/repos/ */
