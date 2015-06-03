@@ -45,6 +45,10 @@ libraryDependencies += "com.typesafe.play" %% "play-ws"    % "2.4.0"
 
 initialCommands in console += "\nimport net.mox9.octokit._"
 initialCommands in console += "\nval m = Main.create() ; import m._ ; import actorSystem.dispatcher"
+initialCommands in console += """
+    |sun.misc.Signal.handle(new sun.misc.Signal("INT"), new sun.misc.SignalHandler() {
+    |  def handle(sig: sun.misc.Signal) = m.stop()
+    |})""".stripMargin
 
 fork in run := true
 cancelable in Global := true
