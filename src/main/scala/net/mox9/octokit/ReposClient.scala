@@ -210,7 +210,7 @@ object Repo {
     (__ \ "source"            ) .readNullable[RepoSummary]
   ).tupled
 
-  implicit val reads: Reads[Repo] =
+  implicit val jsonReads: Reads[Repo] =
     reads1 and reads2 and reads3 and reads4 apply { (v1, v2, v3, v4) =>
       val (id, owner, name, full_name, description, private1, fork) = v1
       val (url, html_url, clone_url, git_url, ssh_url, svn_url, mirror_url, homepage) = v2
