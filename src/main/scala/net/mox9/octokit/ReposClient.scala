@@ -287,6 +287,81 @@ object Repo {
   implicit val jsonFormat: OFormat[Repo] = OFormat(jsonReads, jsonWrites)
 }
 
+final case class Contributor(
+  login               : String,
+  id                  : Int,
+  avatar_url          : Url,
+  gravatar_id         : String,
+  url                 : Url,
+  html_url            : Url,
+  followers_url       : Url,
+  following_url       : Url,
+  gists_url           : Url,
+  starred_url         : Url,
+  subscriptions_url   : Url,
+  organizations_url   : Url,
+  repos_url           : Url,
+  events_url          : Url,
+  received_events_url : Url,
+  `type`              : String,
+  site_admin          : Boolean,
+  contributions       : Int
+)
+object Contributor {
+  val reads2  = (__ \ "contributions").read[Int]
+  val writes2 = OWrites[Contributor](c => Json.obj("contributions" -> c.contributions))
+
+  val jsonReads: Reads[Contributor] =
+    (Reads.of[User] ~ reads2) { (user, contributions) =>
+      Contributor(
+        login               = user.login,
+        id                  = user.id,
+        avatar_url          = user.avatar_url,
+        gravatar_id         = user.gravatar_id,
+        url                 = user.url,
+        html_url            = user.html_url,
+        followers_url       = user.followers_url,
+        following_url       = user.following_url,
+        gists_url           = user.gists_url,
+        starred_url         = user.starred_url,
+        subscriptions_url   = user.subscriptions_url,
+        organizations_url   = user.organizations_url,
+        repos_url           = user.repos_url,
+        events_url          = user.events_url,
+        received_events_url = user.received_events_url,
+        `type`              = user.`type`,
+        site_admin          = user.site_admin,
+        contributions       = contributions
+      )
+    }
+
+  val jsonWrites: OWrites[Contributor] =
+    (implicitly[OWrites[User]] ~ writes2).apply { c =>
+      val u = User(
+        login               = c.login,
+        id                  = c.id,
+        avatar_url          = c.avatar_url,
+        gravatar_id         = c.gravatar_id,
+        url                 = c.url,
+        html_url            = c.html_url,
+        followers_url       = c.followers_url,
+        following_url       = c.following_url,
+        gists_url           = c.gists_url,
+        starred_url         = c.starred_url,
+        subscriptions_url   = c.subscriptions_url,
+        organizations_url   = c.organizations_url,
+        repos_url           = c.repos_url,
+        events_url          = c.events_url,
+        received_events_url = c.received_events_url,
+        `type`              = c.`type`,
+        site_admin          = c.site_admin
+      )
+      (u, c)
+    }
+
+  implicit val jsonFormat: OFormat[Contributor] = OFormat[Contributor](jsonReads, jsonFormat)
+}
+
 /** @see https://developer.github.com/v3/repos/ */
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
@@ -297,6 +372,10 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
 
   def getRepo(owner: String, repo: String): Future[Repo] =
     gh url s"/repos/$owner/$repo" get() map (_.json.as[Repo])
+
+  def getRepoContributors(owner: String, repo: String) = {
+    gh url s"/repos/$owner/$repo/contributors" get()
+  }
 
   def getRepoLanguage(owner: String, repo: String): Future[Map[String, Int]] =
     gh url s"/repos/$owner/$repo/languages" get() map (_.json.as[Map[String, Int]])
