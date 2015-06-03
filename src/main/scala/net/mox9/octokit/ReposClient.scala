@@ -286,13 +286,13 @@ object Repo {
   implicit val jsonFormat: JsonFormat[Repo] = JsonFormat(jsonReads, jsonWrites)
 }
 
-// Alternative listYourRepos / listUserRepos
 /** @see https://developer.github.com/v3/repos/ */
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
 
-  def getRepos()               : Future[Seq[RepoSummary]] = getReposAtUrl(s"/user/repos")
-  def getOrgRepos(org: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
+  def getYourRepos()                 : Future[Seq[RepoSummary]] = getReposAtUrl(s"/user/repos")
+  def getUserRepos(username: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/users/$username/repos")
+  def getOrgRepos(org: String)       : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
 
   def getRepo(owner: String, repo: String): Future[Repo] =
     gh url s"/repos/$owner/$repo" get() map (_.json.as[Repo])
