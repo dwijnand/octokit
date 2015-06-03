@@ -202,12 +202,12 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   def getOrgRepos(org: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
 
   def getRepo(owner: String, repo: String): Future[Repo] =
-    gh url s"/repos/$owner/$repo" get() map (_.json.validate[Repo]) flatten
+    gh url s"/repos/$owner/$repo" get() map (_.json.as[Repo])
 
   private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
     (getReposResp(path, 1)
       flatMap { resp =>
-        resp.json.validate[Seq[RepoSummary]] match {
+        resp.json.as[Seq[RepoSummary]] match {
           case jsError: JsError => jsError.future
           case reposJson        =>
             val remainingReposJson = resp header "Link" flatMap getPageCount match {
@@ -217,11 +217,10 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
             remainingReposJson.foldMap(reposJson)(_ |+| _)
         }
       }
-      flatten
     )
 
-  private def getReposJson(path: String, pageNum: Int): Future[JsResult[Seq[RepoSummary]]] =
-    getReposResp(path, pageNum) map (_.json.validate[Seq[RepoSummary]])
+  private def getReposJson(path: String, pageNum: Int): Future[Seq[RepoSummary]] =
+    getReposResp(path, pageNum) map (_.json.as[Seq[RepoSummary]])
 
   private def getReposResp(path: String, pageNum: Int): Future[WSResponse] =
     (gh
