@@ -382,11 +382,11 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
 
   private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
     (getReposResp(path, 1)
-      flatMap { resp =>
-        resp.json.as[Seq[RepoSummary]] match {
+      flatMap { r =>
+        r.json.as[Seq[RepoSummary]] match {
           case jsError: JsError => jsError.future
           case reposJson        =>
-            val remainingReposJson = resp header "Link" flatMap getPageCount match {
+            val remainingReposJson = r header "Link" flatMap getPageCount match {
               case Some(pageCount) => (2 to pageCount).toVector traverse (getReposJson(path, _))
               case None            => Vector.empty.future
             }
