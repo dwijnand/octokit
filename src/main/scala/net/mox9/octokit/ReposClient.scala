@@ -231,6 +231,59 @@ object Repo {
         subscribers_count, organization, parent, source
       )
     }
+
+  val writes2 =
+    OWrites[Repo] { rs => import rs._
+      Json.obj(
+        "permissions"       -> permissions,
+        "subscribers_count" -> subscribers_count,
+        "organization"      -> organization,
+        "parent"            -> parent,
+        "source"            -> source
+      )
+    }
+
+  implicit val jsonWrites: Writes[Repo] =
+    (writes1 ~ writes2) { r =>
+      val rs = RepoSummary(
+        id                = r.id,
+        owner             = r.owner,
+        name              = r.name,
+        full_name         = r.full_name,
+        description       = r.description,
+        `private`         = r.`private`,
+        fork              = r.fork,
+
+        url               = r.url,
+        html_url          = r.html_url,
+        clone_url         = r.clone_url,
+        git_url           = r.git_url,
+        ssh_url           = r.ssh_url,
+        svn_url           = r.svn_url,
+        mirror_url        = r.mirror_url,
+        homepage          = r.homepage,
+
+        language          = r.language,
+        forks_count       = r.forks_count,
+        stargazers_count  = r.stargazers_count,
+        watchers_count    = r.watchers_count,
+        size              = r.size,
+        default_branch    = r.default_branch,
+        open_issues_count = r.open_issues_count,
+        has_issues        = r.has_issues,
+        has_wiki          = r.has_wiki,
+        has_pages         = r.has_pages,
+        has_downloads     = r.has_downloads,
+        pushed_at         = r.pushed_at,
+        created_at        = r.created_at,
+        updated_at        = r.updated_at,
+
+        permissions       = r.permissions.some
+      )
+      (rs, r)
+    }
+
+  implicit val jsonFormat: JsonFormat[Repo] = JsonFormat(jsonReads, jsonWrites)
 }
 
 // Alternative listYourRepos / listUserRepos
