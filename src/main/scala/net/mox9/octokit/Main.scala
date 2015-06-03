@@ -9,12 +9,7 @@ object Main {
   def main(args: Array[String]): Unit = {
     val org = args.headOption getOrElse (sys error "Provide an org name")
 
-    val accessToken =
-      sys.env get "GITHUB_API_TOKEN" map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
-
-    val connectionConfig = ConnectionConfig create accessToken
-
-    val m = new Main(connectionConfig); import m._
+    val m = create(); import m._
 
     try {
       val repos -> elapsed = timed(getFullOrgRepos(org).await30s)
@@ -25,6 +20,15 @@ object Main {
         s"JSON errors:\n${JsError(errors).toJson.pp}".>>
         throw e
     } finally stop()
+  }
+
+  def create() = {
+    val accessToken =
+      sys.env get "GITHUB_API_TOKEN" map AccessToken getOrElse (sys error "Need to set GITHUB_API_TOKEN")
+
+    val connectionConfig = ConnectionConfig create accessToken
+
+    new Main(connectionConfig)
   }
 }
 

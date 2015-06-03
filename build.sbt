@@ -44,7 +44,7 @@ libraryDependencies += "com.typesafe.play" %% "play-cache" % "2.4.0"
 libraryDependencies += "com.typesafe.play" %% "play-ws"    % "2.4.0"
 
 initialCommands in console += "\nimport net.mox9.octokit._"
-initialCommands in console += "\nval m = new Main ; import m._ ; import actorSystem.dispatcher"
+initialCommands in console += "\nval m = Main.create() ; import m._ ; import actorSystem.dispatcher"
 
 fork in run := true
 cancelable in Global := true
