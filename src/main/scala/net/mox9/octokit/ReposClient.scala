@@ -79,30 +79,30 @@ object RepoSummary {
   ).tupled
 
   val reads2 = (
-    (__ \ "url"        ) .read[Url] and
-    (__ \ "html_url"   ) .read[Url] and
-    (__ \ "clone_url"  ) .read[Url] and
-    (__ \ "git_url"    ) .read[Url] and
-    (__ \ "ssh_url"    ) .read[Url] and
-    (__ \ "svn_url"    ) .read[Url] and
+    (__ \ "url"        ) .read[Url]         and
+    (__ \ "html_url"   ) .read[Url]         and
+    (__ \ "clone_url"  ) .read[Url]         and
+    (__ \ "git_url"    ) .read[Url]         and
+    (__ \ "ssh_url"    ) .read[Url]         and
+    (__ \ "svn_url"    ) .read[Url]         and
     (__ \ "mirror_url" ) .readNullable[Url] and
     (__ \ "homepage"   ) .readNullable[Url]
   ).tupled
 
   val reads3 = (
-    (__ \ "language"          ) .readNullable[String]          and
-    (__ \ "forks_count"       ) .read[Int]                     and
-    (__ \ "stargazers_count"  ) .read[Int]                     and
-    (__ \ "watchers_count"    ) .read[Int]                     and
-    (__ \ "size"              ) .read[Int]                     and
-    (__ \ "default_branch"    ) .read[String]                  and
-    (__ \ "open_issues_count" ) .read[Int]                     and
-    (__ \ "has_issues"        ) .read[Boolean]                 and
-    (__ \ "has_wiki"          ) .read[Boolean]                 and
-    (__ \ "has_pages"         ) .read[Boolean]                 and
-    (__ \ "has_downloads"     ) .read[Boolean]                 and
-    (__ \ "pushed_at"         ) .read[ZonedDateTime]           and
-    (__ \ "created_at"        ) .read[ZonedDateTime]           and
+    (__ \ "language"          ) .readNullable[String] and
+    (__ \ "forks_count"       ) .read[Int]            and
+    (__ \ "stargazers_count"  ) .read[Int]            and
+    (__ \ "watchers_count"    ) .read[Int]            and
+    (__ \ "size"              ) .read[Int]            and
+    (__ \ "default_branch"    ) .read[String]         and
+    (__ \ "open_issues_count" ) .read[Int]            and
+    (__ \ "has_issues"        ) .read[Boolean]        and
+    (__ \ "has_wiki"          ) .read[Boolean]        and
+    (__ \ "has_pages"         ) .read[Boolean]        and
+    (__ \ "has_downloads"     ) .read[Boolean]        and
+    (__ \ "pushed_at"         ) .read[ZonedDateTime]  and
+    (__ \ "created_at"        ) .read[ZonedDateTime]  and
     (__ \ "updated_at"        ) .read[ZonedDateTime]
   ).tupled
 
