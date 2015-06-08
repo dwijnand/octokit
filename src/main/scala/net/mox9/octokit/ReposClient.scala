@@ -202,6 +202,7 @@ final case class Repo(
   permissions       : RepoPermissions,
   subscribers_count : Int,
   organization      : Option[User],
+  // TODO: Either both parent & source are present or neither.. how to..
   parent            : Option[RepoSummary],
   source            : Option[RepoSummary]
 )
@@ -366,14 +367,32 @@ object Contributor {
 final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
   import actorSystem.dispatcher
 
-  def getYourRepos()                 : Future[Seq[RepoSummary]] = getReposAtUrl(s"/user/repos")
-  def getUserRepos(username: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/users/$username/repos")
-  def getOrgRepos(org: String)       : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
+  // type       string  Can be one of all, owner, public, private, member. Default: all
+  // sort       string  Can be one of created, updated, pushed, full_name. Default: full_name
+  // direction  string  Can be one of asc or desc. Default: when using full_name: asc; otherwise desc
+  def listYourRepos()                 : Future[Seq[RepoSummary]] = getReposAtUrl(s"/user/repos")
 
-  def getRepo(owner: String, repo: String): Future[Repo] =
+  // type       string  Can be one of all, owner, member. Default: owner
+  // sort       string  Can be one of created, updated, pushed, full_name. Default: full_name
+  // direction  string  Can be one of asc or desc. Default: when using full_name: asc, otherwise desc
+  def listUserRepos(username: String) : Future[Seq[RepoSummary]] = getReposAtUrl(s"/users/$username/repos")
+
+  // type  string  Can be one of all, public, private, forks, sources, member. Default: all
+  def listOrgRepos(org: String)       : Future[Seq[RepoSummary]] = getReposAtUrl(s"/orgs/$org/repos")
+
+  // since  string  The integer ID of the last Repository that you’ve seen.
+//def listAllPublicRepos(): Future[Seq[RepoSummary]  GET "/repositories"
+
+//def create       (             createRepo: CreateRepo): Future[RepoSummary]    POST "/user/repos"
+//def createOrgRepo(org: String, createRepo: CreateRepo): Future[RepoSummary]    POST s"/orgs/$org/repos"
+  // def createRepo(org: Option[String] ...) ?
+
+//def editRepo(owner: String, repo: String, editRepo: EditRepo)    PATCH s"/repos/$owner/$repo"
+
+  def get(owner: String, repo: String): Future[Repo] =
     gh url s"/repos/$owner/$repo" get() map (_.json.as[Repo])
 
-  def getRepoContributors(owner: String, repo: String): Future[Seq[Contributor]] = (
+  def listContributors(owner: String, repo: String): Future[Seq[Contributor]] = (
     gh
       url s"/repos/$owner/$repo/contributors"
       get()
@@ -386,8 +405,16 @@ final class ReposClient(gh: GitHubClient, actorSystem: ActorSystem) {
       }
   )
 
-  def getRepoLanguage(owner: String, repo: String): Future[Map[String, Int]] =
+  def listLanguages(owner: String, repo: String): Future[Map[String, Int]] =
     gh url s"/repos/$owner/$repo/languages" get() map (_.json.as[Map[String, Int]])
+
+//def listTeams   (owner: String, repo: String): Future[Seq[RepoTeam]]             GET s"/repos/$owner/$repo/teams"
+//def listTags    (owner: String, repo: String): Future[Seq[RepoTag]]              GET s"/repos/$owner/$repo/tags"
+//def listBranches(owner: String, repo: String): Future[Seq[RepoBranchSummary]]    GET s"/repos/$owner/$repo/branches"
+
+//def getBranch(owner: String, repo: String, branch: String): Future[RepoBranch]    GET s"/repos/$owner/$repo/branches/$branch"
+
+//def deleteRepo(owner: String, repo: String): Future[Boolean]    DELETE s"/repos/$owner/$repo"
 
   private def getReposAtUrl(path: String): Future[Seq[RepoSummary]] =
     (getReposResp(path, 1)

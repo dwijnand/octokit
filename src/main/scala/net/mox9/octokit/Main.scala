@@ -42,15 +42,15 @@ class Main(connectionConfig: ConnectionConfig)
   import actorSystem.dispatcher
 
   def getFullOrgRepos(org: String) =
-    gh.repos getOrgRepos org flatMap {
+    gh.repos listOrgRepos org flatMap {
       _ traverse { r =>
-        gh.repos.getRepo(r.owner.login, r.name)
+        gh.repos.get(r.owner.login, r.name)
       }
     }
 
   def getReposWithNonPrimaryLanguage(org: String, lang: String) = {
-    val zrs = gh.repos.getOrgRepos(org)
-    val rals = zrs flatMap (_ traverse (r => gh.repos.getRepoLanguage(r.owner.login, r.name) map r.->))
+    val zrs = gh.repos.listOrgRepos(org)
+    val rals = zrs flatMap (_ traverse (r => gh.repos.listLanguages(r.owner.login, r.name) map r.->))
     val nonLang = rals map (_ filterNot (_._1.language contains lang))
     val poorLang = nonLang map (_ filter (_._2 contains lang))
     poorLang map (_ map (r => r._1.name +: (r._1.language getOrElse "-") +: r._2.toVector.sortBy(x => -x._2)) showM)
