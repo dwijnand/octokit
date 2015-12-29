@@ -1,6 +1,6 @@
 import SbtKitPre._
 
-organization := "net.mox9.octokit"
+organization := "com.dwijnand"
         name := "octokit"
      version := "1.0-SNAPSHOT"
 
@@ -28,7 +28,7 @@ triggeredMessage := Watched.clearWhenTriggered
   wartremoverWarnings += Wart.Any2StringAdd
   wartremoverWarnings += Wart.AsInstanceOf
   wartremoverWarnings += Wart.EitherProjectionPartial
-//wartremoverWarnings += Wart.FinalCaseClass          // False positive on AnyVal: #174
+  wartremoverWarnings += Wart.FinalCaseClass
   wartremoverWarnings += Wart.IsInstanceOf
   wartremoverWarnings += Wart.ListOps
   wartremoverWarnings += Wart.JavaConversions
@@ -40,10 +40,10 @@ triggeredMessage := Watched.clearWhenTriggered
   wartremoverWarnings += Wart.TryPartial
   wartremoverWarnings += Wart.Var
 
-libraryDependencies += "com.typesafe.play" %% "play-cache" % "2.4.0"
-libraryDependencies += "com.typesafe.play" %% "play-ws"    % "2.4.0"
+libraryDependencies += "com.typesafe.play" %% "play-cache" % "2.4.1"
+libraryDependencies += "com.typesafe.play" %% "play-ws"    % "2.4.1"
 
-initialCommands in console += "\nimport net.mox9.octokit._"
+initialCommands in console += "\nimport com.dwijnand.octokit._"
 initialCommands in console += "\nval m = Main.create() ; import m._ ; import actorSystem.dispatcher"
 initialCommands in console += """
     |sun.misc.Signal.handle(new sun.misc.Signal("INT"), new sun.misc.SignalHandler() {

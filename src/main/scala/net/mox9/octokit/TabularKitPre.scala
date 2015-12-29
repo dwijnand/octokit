@@ -1,6 +1,7 @@
 package net.mox9.octokit
 
 // TODO: Consider Product.showP
+// TODO: alias xs.mkString("[", "],[", "]")
 trait TabularKitPre {
   private def trimHeader(h: String): Int => String = {
     case i if i >= h.length => h
@@ -46,15 +47,14 @@ trait TabularKitPre {
     @inline def showM()  = tabularM foreach println
   }
 
-  @inline implicit final class MapWithTabular[K, V](private val xs: Trav[K -> V]) {
+  @inline implicit final class MapWithTabular[K, V](private val xs: Traversable[(K, V)]) {
     @inline def maxKeyLen = xs.toIterator.map(_._1.toString.length).max
     @inline def tabularKV = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2))
     @inline def showKV()  = tabularKV foreach println
   }
 
-  @inline implicit final class MultimapWithTabular[K, V](private val xs: Trav[K -> Trav[V]]) {
-    // TODO: alias xs.mkString("[", "],[", "]")
-    @inline def tabularKVs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2.mkString("[", "],[", "]")))
+  @inline implicit final class MultimapWithTabular[K, V](private val xs: Traversable[(K, Traversable[V])]) {
+    @inline def tabularKVs = xs map (kv => s"%${xs.maxKeyLen}s %s".format(kv._1, kv._2 mkString ", "))
     @inline def showKVs()  = tabularKVs foreach println
   }
 }

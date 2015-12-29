@@ -1,4 +1,5 @@
-import sbt._, Keys._
+import sbt._
+import sbt.Keys._
 
 object SbtKitPre {
   def scalaPartV = Def setting (CrossVersion partialVersion scalaVersion.value)
